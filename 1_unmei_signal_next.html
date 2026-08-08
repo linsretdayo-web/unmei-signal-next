@@ -873,6 +873,18 @@ input:focus{
 <option>復縁</option>
 </select>
 
+<label>相手との関係性</label>
+
+<select id="relationship">
+<option value="new">知り合ったばかり</option>
+<option value="friend">友達</option>
+<option value="schoolWork">職場・学校の知り合い</option>
+<option value="dating">何度かデートしている</option>
+<option value="lover">恋人</option>
+<option value="ex">元恋人</option>
+</select>
+
+
 <label>
 💬　相談内容<br>
 </label>
@@ -891,6 +903,53 @@ placeholder="ここに恋愛の相談内容を入力してください。">
 <button onclick="analyzeLove()">
 💖 運命シグナル解析開始
 </button>
+
+<div id="interestDiagnosisBox" style="
+margin-top:18px;
+padding:20px;
+border-radius:16px;
+background:linear-gradient(
+    135deg,
+    rgba(255,105,180,0.18),
+    rgba(139,92,246,0.16)
+);
+border:1px solid rgba(255,210,235,0.28);
+box-shadow:
+    0 10px 25px rgba(30,15,70,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+">
+
+<h3 style="
+margin:0 0 10px;
+font-size:22px;
+color:#fff0fa;
+">
+💘 脈あり度診断
+</h3>
+
+<p style="
+margin:0 0 16px;
+line-height:1.7;
+color:#ffeefa;
+">
+相談内容から、相手があなたに好意を持っている可能性を分析します。
+</p>
+
+<button type="button" onclick="analyzeInterest()">
+💘 脈あり度を診断する
+</button>
+
+<div id="interestResult" style="
+display:none;
+margin-top:18px;
+padding:18px;
+border-radius:14px;
+background:rgba(35,25,85,0.25);
+border:1px solid rgba(255,255,255,0.12);
+line-height:1.8;
+"></div>
+
+</div>
 
 <div class="result" id="result">
 
@@ -953,6 +1012,18 @@ placeholder="ここに恋愛の相談内容を入力してください。">
 
 <h3>🎨 ラッキーカラー</h3>
 <p id="luckyColor"></p>
+
+<button type="button" onclick="copyDiagnosisResult()" style="margin-top:20px;">
+📋 診断結果をコピー
+</button>
+
+<button type="button" onclick="saveDiagnosisImage()" style="margin-top:12px;">
+📷 診断結果を画像保存
+</button>
+
+<button type="button" onclick="shareDiagnosisResult()" style="margin-top:10px;">
+📤 診断結果を共有
+</button>
 
 
 <div id="dailyFortuneBox"
@@ -1021,6 +1092,36 @@ font-size:16px;
 
 <br>
 
+<div id="compareBox" style="
+margin-top:25px;
+padding:20px;
+border-radius:16px;
+background:rgba(255,255,255,0.10);
+border:1px solid rgba(255,255,255,0.15);
+">
+
+<h3 style="margin-top:0;">
+📊 お気に入り診断を比較
+</h3>
+
+<p id="compareStatus">
+比較する診断を2件選んでください。
+</p>
+
+<button type="button" onclick="compareFavorites()">
+📊 選んだ2件を比較
+</button>
+
+<div id="compareResult" style="
+display:none;
+margin-top:20px;
+line-height:1.8;
+"></div>
+
+</div>
+
+<br>
+
 <button onclick="clearFavorites()">
 🗑 お気に入りを全削除
 </button>
@@ -1029,9 +1130,12 @@ font-size:16px;
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+
 <script>
 
-function saveHistory(category, question, result){
+function saveHistory(category, relationship, question, result){
 
     let histories =
     JSON.parse(localStorage.getItem("loveHistories")) || [];
@@ -1041,6 +1145,7 @@ function saveHistory(category, question, result){
     histories.unshift({
         date: new Date().toLocaleString(),
         category: category,
+        relationship: relationship,
         question: question,
         result: result
     });
@@ -1081,6 +1186,19 @@ function showHistory(){
 
     histories.forEach((item,index)=>{
 
+
+    const relationshipNames = {
+    new: "知り合ったばかり",
+    friend: "友達",
+    schoolWork: "職場・学校の知り合い",
+    dating: "何度かデートしている",
+    lover: "恋人",
+    ex: "元恋人"
+};
+
+const relationshipText =
+relationshipNames[item.relationship] || "未設定";
+
         historyList.innerHTML += `
         <div style="
             background:rgba(255,255,255,0.1);
@@ -1094,6 +1212,7 @@ function showHistory(){
 
             <b>📅 ${item.date}</b><br>
             <b>💖 ${item.category}</b><br><br>
+            <b>💞 相手との関係性：</b>${relationshipText}<br><br>
 
             <b>相談内容</b><br>
             ${item.question}<br><br>
@@ -1213,6 +1332,7 @@ document.getElementById("favoriteSearch").value.trim() :
 
 if(searchWord !== ""){
     favorites = favorites.filter(item =>
+    
         item.date.includes(searchWord) ||
         item.category.includes(searchWord) ||
         item.question.includes(searchWord) ||
@@ -1240,6 +1360,18 @@ if(searchWord !== ""){
 
     favorites.forEach((item,index) => {
 
+    const relationshipNames = {
+    new: "知り合ったばかり",
+    friend: "友達",
+    schoolWork: "職場・学校の知り合い",
+    dating: "何度かデートしている",
+    lover: "恋人",
+    ex: "元恋人"
+};
+
+const relationshipText =
+relationshipNames[item.relationship] || "未設定";
+
         favoriteList.innerHTML += `
         <div style="
             background:rgba(255,255,255,0.1);
@@ -1254,6 +1386,23 @@ if(searchWord !== ""){
 
         <b>📅 ${item.date}</b><br>
         💖 ${item.category}<br><br>
+        <b>💞 相手との関係性：</b>${relationshipText}<br><br>
+
+        <label style="
+display:block;
+margin:10px 0 14px;
+font-weight:bold;
+cursor:pointer;
+">
+<input
+type="checkbox"
+class="compareCheck"
+value="${index}"
+onchange="updateCompareStatus(this)"
+style="width:auto; margin-right:8px;"
+>
+📊 比較候補に選ぶ
+</label>
 
         <b>相談内容</b><br>
         ${item.question}<br><br>
@@ -1311,6 +1460,822 @@ function clearFavorites(){
 
 }
 
+function updateCompareStatus(changedCheck){
+
+    const checks =
+    document.querySelectorAll(".compareCheck");
+
+    const selected =
+    Array.from(checks).filter(check => check.checked);
+
+    const compareStatus =
+    document.getElementById("compareStatus");
+
+    if(selected.length > 2){
+
+        changedCheck.checked = false;
+
+        alert("⚠️ 比較できるのは2件までです。");
+        return;
+    }
+
+    if(selected.length === 0){
+        compareStatus.innerText =
+        "比較する診断を2件選んでください。";
+    }
+    else if(selected.length === 1){
+        compareStatus.innerText =
+        "あと1件選んでください。";
+    }
+    else{
+        compareStatus.innerText =
+        "✅ 2件選択しました。比較できます。";
+    }
+}
+
+
+function compareFavorites(){
+
+    const selected =
+    Array.from(document.querySelectorAll(".compareCheck"))
+    .filter(check => check.checked);
+
+    if(selected.length !== 2){
+        alert("⚠️ 比較する診断を2件選んでください。");
+        return;
+    }
+
+    let favorites =
+    JSON.parse(localStorage.getItem("loveFavorites")) || [];
+
+    const searchWord =
+    document.getElementById("favoriteSearch") ?
+    document.getElementById("favoriteSearch").value.trim() :
+    "";
+
+    if(searchWord !== ""){
+        favorites = favorites.filter(item =>
+            item.date.includes(searchWord) ||
+            item.category.includes(searchWord) ||
+            item.question.includes(searchWord) ||
+            item.result.includes(searchWord)
+        );
+    }
+
+    const first =
+    favorites[Number(selected[0].value)];
+
+    const second =
+    favorites[Number(selected[1].value)];
+
+    if(!first || !second){
+        alert("⚠️ 比較データを取得できませんでした。");
+        return;
+    }
+
+    function getNumber(text, pattern){
+        const match = text.match(pattern);
+        return match ? Number(match[1]) : null;
+    }
+
+    const firstLove =
+    getNumber(first.result, /恋愛運ゲージ\s*[：:]\s*(\d+)%/);
+
+    const secondLove =
+    getNumber(second.result, /恋愛運ゲージ\s*[：:]\s*(\d+)%/);
+
+    const firstSuccess =
+    getNumber(first.result, /恋愛成就確率\s*[：:]\s*(\d+)%/);
+
+    const secondSuccess =
+    getNumber(second.result, /恋愛成就確率\s*[：:]\s*(\d+)%/);
+
+    const firstSignal =
+    getNumber(first.result, /運命シグナル指数\s*[：:]\s*(\d+)/);
+
+    const secondSignal =
+    getNumber(second.result, /運命シグナル指数\s*[：:]\s*(\d+)/);
+
+    if(
+        firstLove === null ||
+        secondLove === null ||
+        firstSuccess === null ||
+        secondSuccess === null ||
+        firstSignal === null ||
+        secondSignal === null
+    ){
+        alert("⚠️ 比較に必要な数値を読み取れませんでした。");
+        return;
+    }
+
+    const loveDiff = secondLove - firstLove;
+    const successDiff = secondSuccess - firstSuccess;
+    const signalDiff = secondSignal - firstSignal;
+
+    function diffText(diff){
+        if(diff > 0) return "+" + diff;
+        return String(diff);
+    }
+
+    const compareResult =
+    document.getElementById("compareResult");
+
+    compareResult.style.display = "block";
+
+    compareResult.innerHTML = `
+        <div style="
+        padding:18px;
+        border-radius:14px;
+        background:rgba(31,23,82,0.25);
+        border:1px solid rgba(255,255,255,0.12);
+        ">
+
+        <h3>📊 診断比較結果</h3>
+
+        <b>① ${first.category}</b><br>
+        ${first.question}<br><br>
+
+        💖 恋愛運ゲージ：${firstLove}%<br>
+        💘 恋愛成就確率：${firstSuccess}%<br>
+        🔮 運命シグナル指数：${firstSignal}<br><br>
+
+        <b>② ${second.category}</b><br>
+        ${second.question}<br><br>
+
+        💖 恋愛運ゲージ：${secondLove}%<br>
+        💘 恋愛成就確率：${secondSuccess}%<br>
+        🔮 運命シグナル指数：${secondSignal}<br><br>
+
+        <hr style="border-color:rgba(255,255,255,0.20);">
+
+        <b>✨ ① → ② の変化</b><br><br>
+
+        💖 恋愛運ゲージ：${diffText(loveDiff)}ポイント<br>
+        💘 恋愛成就確率：${diffText(successDiff)}ポイント<br>
+        🔮 運命シグナル指数：${diffText(signalDiff)}ポイント
+
+        </div>
+    `;
+}
+
+
+function copyDiagnosisResult(){
+
+    const resultBox =
+    document.getElementById("result");
+
+    if(!resultBox || resultBox.style.display === "none"){
+        alert("⚠️ 先に恋愛相談を診断してください。");
+        return;
+    }
+
+    const copyText =
+    resultBox.innerText
+    .replace("📋 診断結果をコピー", "")
+    .trim();
+
+    navigator.clipboard.writeText(copyText)
+    .then(function(){
+        alert("📋 診断結果をコピーしました！");
+    })
+    .catch(function(){
+        alert("⚠️ コピーできませんでした。");
+    });
+}
+
+
+function saveDiagnosisImage(){
+
+    const resultBox =
+    document.getElementById("result");
+
+    if(!resultBox || resultBox.style.display === "none"){
+        alert("⚠️ 先に恋愛相談を診断してください。");
+        return;
+    }
+
+    const copyButton =
+    document.querySelector('button[onclick="copyDiagnosisResult()"]');
+
+    const imageButton =
+    document.querySelector('button[onclick="saveDiagnosisImage()"]');
+
+    if(copyButton) copyButton.style.display = "none";
+    if(imageButton) imageButton.style.display = "none";
+
+    html2canvas(resultBox,{
+        scale:2,
+        backgroundColor:null,
+        useCORS:true
+    }).then(function(canvas){
+
+        const link =
+        document.createElement("a");
+
+        link.download =
+        "運命シグナルNEXT_診断結果.png";
+
+        link.href =
+        canvas.toDataURL("image/png");
+
+        link.click();
+
+        if(copyButton) copyButton.style.display = "";
+        if(imageButton) imageButton.style.display = "";
+
+    }).catch(function(){
+
+        if(copyButton) copyButton.style.display = "";
+        if(imageButton) imageButton.style.display = "";
+
+        alert("⚠️ 画像を保存できませんでした。");
+    });
+}
+
+
+function shareDiagnosisResult(){
+
+    const resultBox =
+    document.getElementById("result");
+
+    if(!resultBox || resultBox.style.display === "none"){
+        alert("⚠️ 先に恋愛相談を診断してください。");
+        return;
+    }
+
+    const shareText =
+    resultBox.innerText
+    .replace("📋 診断結果をコピー", "")
+    .replace("📷 診断結果を画像保存", "")
+    .replace("📤 診断結果を共有", "")
+    .trim();
+
+    if(navigator.share){
+
+        navigator.share({
+            title: "運命シグナルNEXT 診断結果",
+            text: shareText
+        }).catch(function(error){
+
+            if(error.name !== "AbortError"){
+                alert("⚠️ 共有できませんでした。");
+            }
+
+        });
+
+    }else{
+
+        navigator.clipboard.writeText(shareText)
+        .then(function(){
+            alert("📋 この端末では共有メニューを開けないため、診断結果をコピーしました！");
+        })
+        .catch(function(){
+            alert("⚠️ 共有できませんでした。");
+        });
+
+    }
+}
+
+
+function analyzeInterest(){
+
+    const question =
+    document.getElementById("question").value.trim();
+
+    const relationship =
+    document.getElementById("relationship").value;
+
+    const interestResult =
+    document.getElementById("interestResult");
+
+    if(question.length < 5){
+        alert("⚠️ 相手との状況をもう少し詳しく入力してください。");
+        return;
+    }
+
+    let score = 50;
+    let positiveCount = 0;
+    let negativeCount = 0;
+
+
+    /* ==============================
+       強い脈ありサイン
+    ============================== */
+
+    const strongPositiveWords = [
+        "好きと言われた",
+        "好きって言われた",
+        "好意を伝えられた",
+        "告白された",
+        "付き合ってと言われた",
+        "付き合いたいと言われた",
+        "二人で会いたいと言われた",
+        "二人で会おうと言われた",
+        "デートに誘われた",
+        "向こうからデートに誘われた",
+        "相手からデートに誘われた",
+        "相手からデートに誘われました",
+        "相手からデートにも誘われた",
+        "相手からデートにも誘われました",
+        "また会いたいと言われた",
+        "次も会いたいと言われた",
+        "手をつないだ",
+        "手を繋いだ",
+        "キスされた",
+        "キスした",
+        "抱きしめられた",
+        "ハグされた"
+    ];
+
+
+    /* ==============================
+       通常の脈ありサイン
+    ============================== */
+
+    const positiveWords = [
+        "よく目が合う",
+        "何度も目が合う",
+        "目が合う",
+        "笑顔で話してくれる",
+        "笑顔で話す",
+        "よく話しかけてくる",
+        "向こうから話しかけてくる",
+        "相手から話しかけてくる",
+        "話しかけてくる",
+        "よく話しかけてくれる",
+        "よく話しかけてくれます",
+        "向こうから話しかけてくれる",
+        "向こうから話しかけてくれます",
+        "相手から話しかけてくれる",
+        "相手から話しかけてくれます",
+        "よく連絡が来る",
+        "向こうから連絡が来る",
+        "相手から連絡が来る",
+        "連絡が来る",
+        "LINEが来る",
+        "ラインが来る",
+        "返信が早い",
+        "返事が早い",
+        "毎日連絡",
+        "毎日LINE",
+        "毎日ライン",
+        "質問してくる",
+        "いろいろ聞いてくる",
+        "褒めてくれる",
+        "よく褒めてくれる",
+        "心配してくれる",
+        "気にかけてくれる",
+        "二人きりになりたがる",
+        "二人きり",
+        "距離が近い",
+        "よく笑ってくれる",
+        "よく笑う",
+        "予定を聞かれた",
+        "休日を聞かれた",
+        "休みの日を聞かれた",
+        "恋人がいるか聞かれた",
+        "彼氏がいるか聞かれた",
+        "彼女がいるか聞かれた",
+        "好きな人がいるか聞かれた",
+        "趣味を聞かれた",
+        "誕生日を聞かれた",
+        "プライベートなことを聞かれた"
+    ];
+
+
+    /* ==============================
+       脈なし寄りのサイン
+    ============================== */
+
+    const negativeWords = [
+        "既読無視",
+        "未読無視",
+        "既読スルー",
+        "返信が遅い",
+        "返事が遅い",
+        "避けられる",
+        "避けられている",
+        "目を合わせない",
+        "目が合わない",
+        "話してくれない",
+        "話しかけてくれない",
+        "そっけない",
+        "素っ気ない",
+        "冷たい",
+        "誘いを断られた",
+        "デートを断られた",
+        "断られた",
+        "連絡が来ない",
+        "連絡してこない",
+        "LINEが来ない",
+        "ラインが来ない",
+        "返信がない",
+        "返事がない",
+        "興味なさそう",
+        "興味がなさそう",
+        "距離を置かれている",
+        "距離を置かれた",
+        "避けている感じ",
+        "会話が続かない"
+    ];
+
+
+    /* ==============================
+       強い脈なしサイン
+    ============================== */
+
+    const strongNegativeWords = [
+        "嫌いと言われた",
+        "好きじゃないと言われた",
+        "好きではないと言われた",
+        "恋愛対象じゃない",
+        "恋愛対象ではない",
+        "恋愛対象に見られない",
+        "付き合えないと言われた",
+        "付き合う気はないと言われた",
+        "友達としか見れない",
+        "友達としてしか見れない",
+        "他に好きな人がいる",
+        "好きな人がいると言われた",
+        "彼氏がいる",
+        "彼女がいる"
+    ];
+
+
+    /* ==============================
+       否定表現
+       プラスワードの誤判定防止
+    ============================== */
+
+    const negativeExpressions = [
+        "わけではない",
+        "わけではありません",
+        "こともほとんどない",
+        "こともほとんどありません",
+        "こともあまりない",
+        "こともあまりありません",
+        "ことはない",
+        "ことはありません",
+        "あまりない",
+        "ほとんどない",
+        "全然ない",
+        "特にない",
+        "あまりありません",
+        "ほとんどありません",
+        "全然ありません"
+    ];
+
+
+    function isNegated(text, word){
+
+        const index = text.indexOf(word);
+
+        if(index === -1){
+            return false;
+        }
+
+        const after =
+        text.substring(
+            index + word.length,
+            index + word.length + 15
+        );
+
+        return negativeExpressions.some(
+            neg => after.includes(neg)
+        );
+    }
+
+
+    /* ==============================
+       強いプラス判定
+    ============================== */
+
+    let strongPositiveMatched = false;
+
+strongPositiveWords.forEach(word => {
+
+    if(
+        !strongPositiveMatched &&
+        question.includes(word) &&
+        !isNegated(question, word)
+    ){
+
+        score += 18;
+        positiveCount += 2;
+        strongPositiveMatched = true;
+
+    }
+
+});
+
+
+    /* ==============================
+       通常プラス判定
+    ============================== */
+
+    const matchedPositiveWords =
+positiveWords.filter(word =>
+    question.includes(word)
+);
+
+const uniquePositiveWords =
+matchedPositiveWords.filter(word =>
+
+    !matchedPositiveWords.some(otherWord =>
+        otherWord !== word &&
+        otherWord.includes(word)
+    )
+
+);
+
+uniquePositiveWords.forEach(word => {
+
+    if(isNegated(question, word)){
+
+        score -= 5;
+        negativeCount++;
+
+    }else{
+
+        score += 7;
+        positiveCount++;
+
+    }
+
+});
+
+
+    /* ==============================
+       マイナス判定
+    ============================== */
+
+    const matchedNegativeWords =
+negativeWords.filter(word =>
+    question.includes(word)
+);
+
+const uniqueNegativeWords =
+matchedNegativeWords.filter(word =>
+
+    !matchedNegativeWords.some(otherWord =>
+        otherWord !== word &&
+        otherWord.includes(word)
+    )
+
+);
+
+uniqueNegativeWords.forEach(word => {
+
+    score -= 8;
+    negativeCount++;
+
+});
+
+
+    /* ==============================
+       強いマイナス判定
+    ============================== */
+
+    strongNegativeWords.forEach(word => {
+
+        if(question.includes(word)){
+
+            score -= 20;
+            negativeCount += 2;
+
+        }
+
+    });
+
+
+    /* ==============================
+       関係性による微調整
+    ============================== */
+
+    if(relationship === "dating"){
+        score += 8;
+    }
+
+    if(relationship === "lover"){
+        score += 15;
+    }
+
+    if(relationship === "new"){
+        score -= 3;
+    }
+
+    if(relationship === "ex"){
+        score -= 5;
+    }
+
+
+    /* 5～95％に制限 */
+
+    score = Math.max(
+        5,
+        Math.min(95, score)
+    );
+
+
+    /* ==============================
+       判定メッセージ
+    ============================== */
+
+    let level = "";
+    let comment = "";
+    let action = "";
+
+
+    if(score >= 85){
+
+        level =
+        "💖 脈あり度：かなり高い";
+
+        comment =
+        "相手からの好意を感じさせるサインがかなり多く見られます。" +
+        "恋愛関係に進展する可能性が高い状態です。";
+
+        action =
+        "今の良い雰囲気を保ちながら、二人で会う機会を増やしたり、" +
+        "少しずつ好意を伝えてみるのがおすすめです。";
+
+    }
+    else if(score >= 70){
+
+        level =
+        "💕 脈あり度：高め";
+
+        comment =
+        "相手があなたを意識している可能性があります。" +
+        "好意的な反応が複数見られる状態です。";
+
+        action =
+        "会話や連絡を続けながら、二人きりで過ごせる機会を作ってみましょう。";
+
+    }
+    else if(score >= 55){
+
+        level =
+        "💗 脈あり度：やや高め";
+
+        comment =
+        "好意の可能性はありますが、まだ友情や親しさとの区別がつきにくい段階です。";
+
+        action =
+        "相手から質問が増えるか、連絡や会話が続くかなど、今後の反応を見ていきましょう。";
+
+    }
+    else if(score >= 40){
+
+        level =
+        "💛 脈あり度：まだ判断が難しい";
+
+        comment =
+        "現時点では、恋愛感情があるともないとも断定しにくい状態です。";
+
+        action =
+        "急いで結論を出さず、自然な会話や交流を増やして相手の反応を確認しましょう。";
+
+    }
+    else if(score >= 25){
+
+        level =
+        "💙 脈あり度：低め";
+
+        comment =
+        "今のところ、強い好意を示すサインは少なめです。";
+
+        action =
+        "無理に距離を縮めず、まずは相手が安心して話せる関係を作ることを優先しましょう。";
+
+    }
+    else{
+
+        level =
+        "🌙 脈あり度：かなり低い";
+
+        comment =
+        "現在の状況では、恋愛的な好意を示すサインはかなり少ないようです。";
+
+        action =
+        "相手の気持ちや距離感を尊重し、しばらく様子を見るのがおすすめです。";
+
+    }
+
+
+    /* ==============================
+       サイン比較
+    ============================== */
+
+    let signText = "";
+
+    if(positiveCount > negativeCount){
+
+        signText =
+        "💡 好意を感じさせるサインが、マイナス要素より多く見つかりました。";
+
+    }
+    else if(negativeCount > positiveCount){
+
+        signText =
+        "💡 現在は、距離を感じさせるサインのほうがやや多く見つかりました。";
+
+    }
+    else{
+
+        signText =
+        "💡 好意・非好意どちらのサインも決め手が少ない状態です。";
+
+    }
+
+
+    /* ==============================
+       結果表示
+    ============================== */
+
+    interestResult.style.display = "block";
+
+    interestResult.innerHTML = `
+
+        <h3 style="margin-top:0;">
+        💘 脈あり度診断結果
+        </h3>
+
+        <div style="
+        font-size:25px;
+        font-weight:bold;
+        margin:15px 0;
+        color:#ffd6ef;
+        ">
+        ${score}%
+        </div>
+
+        <div style="
+        background:rgba(255,255,255,0.20);
+        height:22px;
+        border-radius:20px;
+        overflow:hidden;
+        margin-bottom:20px;
+        ">
+
+            <div style="
+            width:${score}%;
+            height:22px;
+            border-radius:20px;
+            background:linear-gradient(
+                90deg,
+                #8b5cf6,
+                #ff4fa3,
+                #ffd166
+            );
+            transition:width 0.8s ease;
+            ">
+            </div>
+
+        </div>
+
+        <b>${level}</b>
+
+        <p>
+        ${comment}
+        </p>
+
+        <p>
+        ${signText}
+        </p>
+
+        <hr style="
+        border:none;
+        border-top:1px solid rgba(255,255,255,0.18);
+        margin:18px 0;
+        ">
+
+        <b>💌 おすすめ行動</b>
+
+        <p>
+        ${action}
+        </p>
+
+        <p style="
+        font-size:13px;
+        color:#e8dcec;
+        margin-bottom:0;
+        ">
+        ※脈あり度は、入力された相談内容に含まれる言葉や状況から分析した目安です。
+        </p>
+
+    `;
+
+
+    interestResult.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+    });
+
+}
+
+
+
 
 window.onload = function(){
 
@@ -1323,6 +2288,9 @@ function analyzeLove(){
 
 const category =
 document.getElementById("category").value;
+
+const relationship =
+document.getElementById("relationship").value;
 
 const result =
 document.getElementById("result");
@@ -13170,8 +14138,80 @@ dailyItem.innerText =
 items[Math.floor(Math.random() * items.length)];
 
 
+// ===== 相手との関係性による軽い補正 =====
+
+const relationshipAdjust = {
+    new: -4,
+    friend: 0,
+    schoolWork: -2,
+    dating: 4,
+    lover: 3,
+    ex: -5
+};
+
+const relationshipAdvice = {
+    new: "まだ知り合って間もないため、まずは会話や交流を増やしながら自然に距離を縮めていきましょう。",
+    friend: "すでに友達としての関係があるので、今の自然な雰囲気を大切にしながら少しずつ特別感を出してみましょう。",
+    schoolWork: "職場や学校で今後も顔を合わせる関係なので、急ぎすぎず相手の反応を見ながら距離を縮めるのがおすすめです。",
+    dating: "すでに何度か二人で会えているため、相手との距離は比較的縮まっていると考えられます。次の一歩を意識してもよいでしょう。",
+    lover: "すでに恋人関係なので、進展を急ぐよりも相手への感謝や思いやりを大切にして関係を深めていきましょう。",
+    ex: "元恋人との関係では過去の経緯も大切です。焦って元の関係に戻そうとせず、現在の相手の気持ちを尊重しましょう。"
+};
+
+const adjust = relationshipAdjust[relationship] || 0;
+
+
+// 恋愛運ゲージ
+const loveMatch = lovePower.innerText.match(/\d+/);
+
+if(loveMatch){
+    const newLove =
+    Math.max(0, Math.min(100, Number(loveMatch[0]) + adjust));
+
+    lovePower.innerText = newLove + "%";
+    loveBar.style.width = newLove + "%";
+}
+
+
+// 恋愛成就確率
+const successMatch = successRate.innerText.match(/\d+/);
+
+if(successMatch){
+    const newSuccess =
+    Math.max(0, Math.min(100, Number(successMatch[0]) + adjust));
+
+    successRate.innerText =
+    "💘 恋愛成就確率：" + newSuccess + "%";
+
+    successBar.style.width = newSuccess + "%";
+}
+
+
+// 運命シグナル指数
+const signalMatch = signalIndex.innerText.match(/\d+/);
+
+if(signalMatch){
+    const newSignal =
+    Math.max(0, Math.min(100, Number(signalMatch[0]) + adjust));
+
+    signalIndex.innerText =
+    "運命シグナル指数：" + newSignal + " / 100";
+
+    signalBar.style.width = newSignal + "%";
+}
+
+
+// 関係性に合わせたアドバイスを追加
+if(relationshipAdvice[relationship]){
+    recommendAction.innerText +=
+    "\n\n💞 関係性からのアドバイス：" +
+    relationshipAdvice[relationship];
+}
+
+
 saveHistory(
     category,
+    relationship,
     question,
     `💕 ${level}<br>
 📝 ${answer}<br>
