@@ -1059,6 +1059,23 @@ style="display:block; margin-top:30px;">
 🗑 履歴を全削除
 </button>
 
+
+<div class="result" id="interestHistoryBox" style="display:block; margin-top:30px;">
+
+<h2 id="interestHistoryTitle">💘 脈あり度診断履歴</h2>
+
+<div id="interestHistoryList">
+まだ脈あり度診断履歴はありません。
+</div>
+
+<br>
+
+<button type="button" onclick="clearInterestHistory()">
+🗑 脈あり度履歴を全削除
+</button>
+
+</div>
+
 <div class="result" id="favoriteBox" style="display:block; margin-top:30px;">
 
 <h2 id="favoriteTitle">⭐ お気に入り履歴</h2>
@@ -1777,6 +1794,22 @@ function analyzeInterest(){
         "相手からデートに誘われました",
         "相手からデートにも誘われた",
         "相手からデートにも誘われました",
+                "相手から食事に誘われた",
+        "相手から食事に誘われました",
+        "向こうから食事に誘われた",
+        "向こうから食事に誘われました",
+        "相手からご飯に誘われた",
+        "相手からご飯に誘われました",
+        "向こうからご飯に誘われた",
+        "向こうからご飯に誘われました",
+        "相手からディナーに誘われた",
+        "相手からディナーに誘われました",
+        "向こうからディナーに誘われた",
+        "向こうからディナーに誘われました",
+        "相手からランチに誘われた",
+        "相手からランチに誘われました",
+        "向こうからランチに誘われた",
+        "向こうからランチに誘われました",
         "また会いたいと言われた",
         "次も会いたいと言われた",
         "手をつないだ",
@@ -1839,7 +1872,22 @@ function analyzeInterest(){
         "好きな人がいるか聞かれた",
         "趣味を聞かれた",
         "誕生日を聞かれた",
-        "プライベートなことを聞かれた"
+        "プライベートなことを聞かれた",
+                "プライベートなことを聞かれた",
+        "二人で会った",
+        "二人で会いました",
+        "二人きりで会った",
+        "二人きりで会いました",
+        "食事に行った",
+        "食事に行きました",
+        "ご飯に行った",
+        "ご飯に行きました",
+        "ディナーに行った",
+        "ディナーに行きました",
+        "ランチに行った",
+        "ランチに行きました",
+        "一緒に食事した",
+        "一緒に食事しました"
     ];
 
 
@@ -2003,6 +2051,73 @@ uniquePositiveWords.forEach(word => {
     }
 
 });
+
+
+/* ==============================
+   実際に二人で会っている場合の追加ボーナス
+============================== */
+
+const meetingWords = [
+    "二人で会った",
+    "二人で会いました",
+    "二人きりで会った",
+    "二人きりで会いました",
+    "食事に行った",
+    "食事に行きました",
+    "ご飯に行った",
+    "ご飯に行きました",
+    "ディナーに行った",
+    "ディナーに行きました",
+    "ランチに行った",
+    "ランチに行きました",
+    "一緒に食事した",
+    "一緒に食事しました"
+];
+
+const meetingMatched =
+meetingWords.some(word =>
+    question.includes(word)
+);
+
+if(meetingMatched){
+    score += 8;
+    positiveCount++;
+}
+
+
+/* ==============================
+   相手から食事に誘われた場合の追加ボーナス
+============================== */
+
+const invitedMealWords = [
+    "相手から食事に誘われた",
+    "相手から食事に誘われました",
+    "向こうから食事に誘われた",
+    "向こうから食事に誘われました",
+    "相手からご飯に誘われた",
+    "相手からご飯に誘われました",
+    "向こうからご飯に誘われた",
+    "向こうからご飯に誘われました",
+    "相手からディナーに誘われた",
+    "相手からディナーに誘われました",
+    "向こうからディナーに誘われた",
+    "向こうからディナーに誘われました",
+    "相手からランチに誘われた",
+    "相手からランチに誘われました",
+    "向こうからランチに誘われた",
+    "向こうからランチに誘われました"
+];
+
+const invitedMealMatched =
+invitedMealWords.some(word =>
+    question.includes(word)
+);
+
+if(invitedMealMatched){
+    score += 7;
+    positiveCount++;
+}
+
 
 
     /* ==============================
@@ -2266,6 +2381,16 @@ uniqueNegativeWords.forEach(word => {
 
     `;
 
+    saveInterestHistory(
+    question,
+    relationship,
+    score,
+    level,
+    comment,
+    signText,
+    action
+);
+
 
     interestResult.scrollIntoView({
         behavior:"smooth",
@@ -2275,12 +2400,157 @@ uniqueNegativeWords.forEach(word => {
 }
 
 
+function saveInterestHistory(
+    question,
+    relationship,
+    score,
+    level,
+    comment,
+    signText,
+    action
+){
+
+    let histories =
+    JSON.parse(localStorage.getItem("interestHistories")) || [];
+
+    histories.unshift({
+        date: new Date().toLocaleString(),
+        question: question,
+        relationship: relationship,
+        score: score,
+        level: level,
+        comment: comment,
+        signText: signText,
+        action: action
+    });
+
+    if(histories.length > 30){
+        histories = histories.slice(0,30);
+    }
+
+    localStorage.setItem(
+        "interestHistories",
+        JSON.stringify(histories)
+    );
+
+    showInterestHistory();
+}
+
+
+function showInterestHistory(){
+
+    const historyList =
+    document.getElementById("interestHistoryList");
+
+    const historyTitle =
+    document.getElementById("interestHistoryTitle");
+
+    if(!historyList || !historyTitle){
+        return;
+    }
+
+    let histories =
+    JSON.parse(localStorage.getItem("interestHistories")) || [];
+
+    historyTitle.innerText =
+    "💘 脈あり度診断履歴（" + histories.length + "件）";
+
+    if(histories.length === 0){
+        historyList.innerHTML =
+        "まだ脈あり度診断履歴はありません。";
+        return;
+    }
+
+    historyList.innerHTML = "";
+
+    const relationshipNames = {
+        new: "知り合ったばかり",
+        friend: "友達",
+        schoolWork: "職場・学校の知り合い",
+        dating: "何度かデートしている",
+        lover: "恋人",
+        ex: "元恋人"
+    };
+
+    histories.forEach((item,index)=>{
+
+        const relationshipText =
+        relationshipNames[item.relationship] || "未設定";
+
+        historyList.innerHTML += `
+        <div style="
+            background:rgba(255,255,255,0.10);
+            padding:18px;
+            border-radius:14px;
+            margin-bottom:16px;
+            line-height:1.8;
+            word-break:break-word;
+            overflow-wrap:anywhere;
+        ">
+
+            <b>📅 ${item.date}</b><br>
+            <b>💞 相手との関係性：</b>${relationshipText}<br><br>
+
+            <b>相談内容</b><br>
+            ${item.question}<br><br>
+
+            <b>💘 脈あり度：${item.score}%</b><br>
+            ${item.level}<br><br>
+
+            ${item.comment}<br>
+            ${item.signText}<br><br>
+
+            <b>💌 おすすめ行動</b><br>
+            ${item.action}<br><br>
+
+            <button type="button" onclick="deleteInterestHistory(${index})">
+            🗑 この履歴を削除
+            </button>
+
+        </div>
+        `;
+    });
+}
+
+
+function deleteInterestHistory(index){
+
+    let histories =
+    JSON.parse(localStorage.getItem("interestHistories")) || [];
+
+    if(confirm("この脈あり度診断履歴を削除しますか？")){
+
+        histories.splice(index,1);
+
+        localStorage.setItem(
+            "interestHistories",
+            JSON.stringify(histories)
+        );
+
+        showInterestHistory();
+    }
+}
+
+
+function clearInterestHistory(){
+
+    if(confirm("脈あり度診断履歴を全て削除しますか？")){
+
+        localStorage.removeItem("interestHistories");
+
+        showInterestHistory();
+    }
+}
+
+
 
 
 window.onload = function(){
 
     showHistory();
     showFavorites();
+    showInterestHistory();
+
 
 }
 
@@ -2398,8 +2668,25 @@ let isTalkCase = false;
 
 let isScenarioCase = false;
 
-const question =
+const originalQuestion =
 document.getElementById("question").value;
+
+let question = originalQuestion;
+
+/* 「好きな人を○○に誘いたい」を既存シナリオに一括対応 */
+const naturalInviteMatch =
+originalQuestion.match(/好きな人を(.+?)に誘いたい(?:です)?/);
+
+if(naturalInviteMatch){
+
+    const inviteTarget =
+    naturalInviteMatch[1].trim();
+
+    question +=
+        " " + inviteTarget + "に誘いたいです" +
+        " " + inviteTarget + "体験に誘いたいです" +
+        " " + inviteTarget + "デートに誘いたいです";
+}
 
 const invalidWords = [
 "うんこ",
@@ -3156,6 +3443,49 @@ if(!hasLoveKeyword){
     return;
 }
 
+/* ==============================
+   過去のデート・体験を一括判定
+============================== */
+
+const pastActionWords = [
+    "に行った",
+    "に行きました",
+    "へ行った",
+    "へ行きました",
+    "をした",
+    "をしました",
+    "した",
+    "しました",
+    "を体験した",
+    "を体験しました",
+    "を見に行った",
+    "を見に行きました"
+];
+
+const excludedPastKeywords = [
+    "好き",
+    "恋",
+    "告白",
+    "喧嘩",
+    "電話",
+    "通話"
+];
+
+const matchedPastKeywords =
+loveKeywords
+.filter(word =>
+    question.includes(word) &&
+    !excludedPastKeywords.includes(word)
+)
+.sort((a,b) => b.length - a.length);
+
+const pastDateKeyword =
+matchedPastKeywords.find(keyword =>
+    pastActionWords.some(action =>
+        question.includes(keyword + action)
+    )
+) || null;
+
 const lightTroubleKeywords = [
     "不安",
     "返信",
@@ -3403,11 +3733,62 @@ if(question.includes("告白を断られた") ||
 }
 
 
+if(pastDateKeyword){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💖 シグナルレベル：★★★★☆";
+
+    answer =
+    `好きな人と「${pastDateKeyword}」を実際に一緒に経験できたことは、関係を深めるプラスの出来事です。ただし、一緒に過ごしただけで恋愛感情が確定するわけではないので、その時の相手の反応やその後のやり取りも合わせて見ていきましょう。`;
+
+    lovePower.innerText = "80%";
+    loveBar.style.width = "80%";
+
+    successRate.innerText =
+    "💘 恋愛成就確率：70%";
+    successBar.style.width = "70%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：78 / 100";
+    signalBar.style.width = "78%";
+
+    currentStatus.innerText =
+    `「${pastDateKeyword}」を一緒に楽しめたことで、相手との距離や相性を以前より判断しやすい段階に進んでいます。`;
+
+    recommendAction.innerText =
+    "一緒に過ごした時の楽しかった話題をきっかけに、自然に会話や連絡を続けてみましょう。相手の反応が良ければ、次のお出かけにつなげるのがおすすめです。";
+
+    cautionPoint.innerText =
+    "一緒に出かけたり体験したことだけで脈ありと決めつけず、相手からの連絡・会話の広がり・次の誘いへの反応なども合わせて判断しましょう。";
+
+    finalJudge.innerText =
+    `「${pastDateKeyword}」を共有できたことは前向きな材料です。今後も自然な交流が続くなら、関係がさらに深まる可能性があります。`;
+
+    aiComment.innerText =
+    "大切なのは、その体験の後も相手があなたとのやり取りを続けようとしているかです。次の反応をゆっくり見ていきましょう。";
+
+    partnerFeeling.innerText =
+    "少なくとも一緒に時間を過ごすことへの抵抗は少ない可能性があります。相手の表情や会話、その後の連絡にも注目してみましょう。";
+
+    bestTiming.innerText =
+    "楽しかった余韻が残っているうちに、数日以内を目安に自然な連絡をしてみるのがおすすめです。";
+
+    luckyAction.innerText =
+    `🍀 「${pastDateKeyword}、楽しかったね」など、共有した出来事を自然に話題にしてみましょう。`;
+
+    luckyColor.innerText =
+    "🧡 オレンジ：明るく親しみやすいコミュニケーションを後押ししてくれるでしょう。";
+
+    chanceTiming.innerText =
+    "📅 一緒に過ごした後の1週間ほどは、次の会話や約束につなげやすいタイミングです。";
+}
 
 
 
-
-if(isTalkCase && !isScenarioCase){
+else if(isTalkCase && !isScenarioCase){
 
     currentStatus.innerText =
     "相手との会話ができたことで、関係は少しずつ前進している状態です。";
@@ -5399,6 +5780,8 @@ else if(question.includes("チーズ作り体験に誘いたいです") ||
 
 else if(question.includes("ボルダリング体験に誘いたいです") ||
         question.includes("ボルダリング体験に誘いたい") ||
+        question.includes("好きな人をボルダリングに誘いたいです") ||
+        question.includes("好きな人をボルダリングに誘いたい") ||
         question.includes("ボルダリングデートに誘いたいです") ||
         question.includes("ボルダリングデートに誘いたい") ||
         question.includes("ボルダリング体験に行きませんか") ||
@@ -14212,7 +14595,7 @@ if(relationshipAdvice[relationship]){
 saveHistory(
     category,
     relationship,
-    question,
+    originalQuestion,
     `💕 ${level}<br>
 📝 ${answer}<br>
 🌸 現在の状況：${currentStatus.innerText}<br>
