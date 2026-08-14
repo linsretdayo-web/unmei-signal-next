@@ -1775,6 +1775,52 @@ function analyzeInterest(){
     let negativeCount = 0;
 
 
+// 恋愛対象として明確に好意を伝えられた場合
+const romanticLoveWords = [
+    "恋愛対象として好きと言われた",
+    "恋愛対象として好きと言われました",
+    "異性として好きと言われた",
+    "異性として好きと言われました"
+];
+
+// 明確な告白・交際希望
+const confessionWords = [
+    "告白された",
+    "告白されました",
+    "付き合ってと言われた",
+    "付き合ってと言われました",
+    "付き合ってほしいと言われた",
+    "付き合ってほしいと言われました",
+    "付き合いたいと言われた",
+    "付き合いたいと言われました",
+    "恋人になってほしいと言われた",
+    "恋人になってほしいと言われました"
+];
+
+const romanticLoveMatched =
+romanticLoveWords.some(word =>
+    question.includes(word)
+);
+
+const confessionMatched =
+confessionWords.some(word =>
+    question.includes(word)
+);
+
+if(romanticLoveMatched){
+    score = Math.max(score, 82);
+    positiveCount += 3;
+}
+
+if(confessionMatched){
+    score = Math.max(score, 88);
+    positiveCount += 4;
+}
+
+
+
+
+
     /* ==============================
        強い脈ありサイン
     ============================== */
@@ -1782,6 +1828,8 @@ function analyzeInterest(){
     const strongPositiveWords = [
         "好きと言われた",
         "好きって言われた",
+        "相手から好きと言われた",
+        "相手から好きと言われました",
         "好意を伝えられた",
         "告白された",
         "付き合ってと言われた",
@@ -1794,8 +1842,10 @@ function analyzeInterest(){
         "相手からデートに誘われました",
         "相手からデートにも誘われた",
         "相手からデートにも誘われました",
-                "相手から食事に誘われた",
+        "相手から食事に誘われた",
         "相手から食事に誘われました",
+        "二人で食事にも誘われた",
+        "二人で食事にも誘われました",
         "向こうから食事に誘われた",
         "向こうから食事に誘われました",
         "相手からご飯に誘われた",
@@ -1842,12 +1892,27 @@ function analyzeInterest(){
         "相手から話しかけてくれる",
         "相手から話しかけてくれます",
         "よく連絡が来る",
+        "よく連絡をくれる",
+        "よく連絡をくれます",
+        "よく連絡をくれて",
         "向こうから連絡が来る",
         "相手から連絡が来る",
         "連絡が来る",
+        "相手からよくLINEが来る",
+        "相手からよくLINEが来ます",
+        "向こうからよくLINEが来る",
+        "向こうからよくLINEが来ます",
+        "相手からよくLINEが来て",
+        "向こうからよくLINEが来て",
         "LINEが来る",
         "ラインが来る",
         "返信が早い",
+        "返信がよく来る",
+        "返事がよく来る",
+        "LINEが続く",
+        "ラインが続く",
+        "LINEは続く",
+        "ラインは続く",
         "返事が早い",
         "毎日連絡",
         "毎日LINE",
@@ -1903,6 +1968,7 @@ function analyzeInterest(){
         "返事が遅い",
         "避けられる",
         "避けられている",
+        "避けられていて",
         "目を合わせない",
         "目が合わない",
         "話してくれない",
@@ -1918,6 +1984,8 @@ function analyzeInterest(){
         "LINEが来ない",
         "ラインが来ない",
         "返信がない",
+        "LINEの返信もありません",
+        "LINEの返信がありません",
         "返事がない",
         "興味なさそう",
         "興味がなさそう",
@@ -1926,6 +1994,30 @@ function analyzeInterest(){
         "避けている感じ",
         "会話が続かない"
     ];
+
+/* ==============================
+   弱い脈なしサイン
+============================== */
+
+const weakNegativeWords = [
+    "返信がそっけない",
+    "返事がそっけない",
+    "返信が短い",
+    "返事が短い",
+    "質問してこない",
+    "相手から質問がない",
+    "友達っぽい",
+    "友達みたい",
+    "恋愛っぽくない",
+    "恋愛感がない",
+    "デートっぽくない",
+    "友達として見られている気がする",
+    "LINEが来なくなった",
+    "LINEが来なくなって",
+    "あまり話しかけてくれない",
+    "あまり話しかけてくれません"
+];
+
 
 
     /* ==============================
@@ -1946,7 +2038,22 @@ function analyzeInterest(){
         "他に好きな人がいる",
         "好きな人がいると言われた",
         "彼氏がいる",
-        "彼女がいる"
+        "彼女がいる",
+        "彼氏がいる",
+        "彼女がいる",
+        "断られることが多い",
+        "断られることが多いです",
+        "何度も断られる",
+        "よく断られる",
+        "告白したら断られた",
+        "告白したら断られました",
+        "恋愛対象として見られない",
+        "恋愛対象として見られないと言われた",
+        "恋愛対象として見られないと言われました",
+        "友達でいたいと言われた",
+        "友達でいたいと言われました",
+        "これからも友達でいたいと言われた",
+        "これからも友達でいたいと言われました"
     ];
 
 
@@ -2003,10 +2110,12 @@ function analyzeInterest(){
 strongPositiveWords.forEach(word => {
 
     if(
-        !strongPositiveMatched &&
-        question.includes(word) &&
-        !isNegated(question, word)
-    ){
+    !romanticLoveMatched &&
+    !confessionMatched &&
+    !strongPositiveMatched &&
+    question.includes(word) &&
+    !isNegated(question, word)
+){
 
         score += 18;
         positiveCount += 2;
@@ -2062,6 +2171,12 @@ const meetingWords = [
     "二人で会いました",
     "二人きりで会った",
     "二人きりで会いました",
+    "よく二人で会う",
+    "よく二人で会います",
+    "何度も二人で会った",
+    "何度も二人で会いました",
+    "二人で何度も会っている",
+    "二人で何度も会っています",
     "食事に行った",
     "食事に行きました",
     "ご飯に行った",
@@ -2086,12 +2201,38 @@ if(meetingMatched){
 
 
 /* ==============================
+   継続して二人で会っている場合の追加ボーナス
+============================== */
+
+const repeatedMeetingWords = [
+    "よく二人で会う",
+    "よく二人で会います",
+    "何度も二人で会った",
+    "何度も二人で会いました",
+    "二人で何度も会っている",
+    "二人で何度も会っています"
+];
+
+const repeatedMeetingMatched =
+repeatedMeetingWords.some(word =>
+    question.includes(word)
+);
+
+if(repeatedMeetingMatched){
+    score += 4;
+}
+
+
+
+/* ==============================
    相手から食事に誘われた場合の追加ボーナス
 ============================== */
 
 const invitedMealWords = [
     "相手から食事に誘われた",
     "相手から食事に誘われました",
+    "二人で食事にも誘われた",
+    "二人で食事にも誘われました",
     "向こうから食事に誘われた",
     "向こうから食事に誘われました",
     "相手からご飯に誘われた",
@@ -2116,6 +2257,62 @@ invitedMealWords.some(word =>
 if(invitedMealMatched){
     score += 7;
     positiveCount++;
+}
+
+
+/* ==============================
+   相手から遊びに誘われた場合の追加ボーナス
+============================== */
+
+const invitedActivityWords = [
+    "相手から遊びに誘われた",
+    "相手から遊びに誘われました",
+    "向こうから遊びに誘われた",
+    "向こうから遊びに誘われました",
+    "相手から出かけようと誘われた",
+    "相手から出かけようと誘われました",
+    "向こうから出かけようと誘われた",
+    "向こうから出かけようと誘われました",
+    "二人で遊びに誘われた",
+    "二人で遊びに誘われました",
+    "二人で遊びにも誘われた",
+    "二人で遊びにも誘われました",
+    "二人で遊びにも誘われます"
+];
+
+const invitedActivityMatched =
+invitedActivityWords.some(word =>
+    question.includes(word)
+);
+
+if(invitedActivityMatched){
+    score += 7;
+    positiveCount++;
+}
+
+
+/* ==============================
+   相手からよく誘われる場合の追加ボーナス
+============================== */
+
+const frequentInviteWords = [
+    "よく相手から誘われる",
+    "よく相手から誘われます",
+    "相手からよく誘われる",
+    "相手からよく誘われます",
+    "よく向こうから誘われる",
+    "よく向こうから誘われます",
+    "向こうからよく誘われる",
+    "向こうからよく誘われます"
+];
+
+const frequentInviteMatched =
+frequentInviteWords.some(word =>
+    question.includes(word)
+);
+
+if(frequentInviteMatched){
+    score += 4;
 }
 
 
@@ -2147,21 +2344,53 @@ uniqueNegativeWords.forEach(word => {
 });
 
 
+/* ==============================
+   弱いマイナス判定
+============================== */
+
+weakNegativeWords.forEach(word => {
+
+    if(question.includes(word)){
+
+        score -= 4;
+        negativeCount++;
+
+    }
+
+});
+
+
+
     /* ==============================
        強いマイナス判定
     ============================== */
 
-    strongNegativeWords.forEach(word => {
+    const matchedStrongNegativeWords =
+strongNegativeWords.filter(word =>
+    question.includes(word)
+);
 
-        if(question.includes(word)){
+const uniqueStrongNegativeWords =
+matchedStrongNegativeWords.filter(word =>
 
-            score -= 20;
-            negativeCount += 2;
+    !matchedStrongNegativeWords.some(otherWord =>
+        otherWord !== word &&
+        otherWord.includes(word)
+    )
 
-        }
+);
 
-    });
+if(uniqueStrongNegativeWords.length > 0){
 
+    const strongNegativePenalty =
+    Math.min(
+        20 + (uniqueStrongNegativeWords.length - 1) * 5,
+        30
+    );
+
+    score -= strongNegativePenalty;
+    negativeCount += uniqueStrongNegativeWords.length * 2;
+}
 
     /* ==============================
        関係性による微調整
@@ -2240,18 +2469,26 @@ uniqueNegativeWords.forEach(word => {
         "相手から質問が増えるか、連絡や会話が続くかなど、今後の反応を見ていきましょう。";
 
     }
-    else if(score >= 40){
 
-        level =
-        "💛 脈あり度：まだ判断が難しい";
+   else if(score >= 40){
+    level =
+    "💛 脈あり度：まだ判断が難しい";
 
+    if(positiveCount > 0 && negativeCount > 0){
+        comment =
+        "好意を感じさせるサインがある一方で、距離を感じさせるサインも見られます。相手の気持ちや状況が変化している可能性もあります。";
+
+        action =
+        "過去の好意だけで判断せず、現在の連絡頻度や接し方など、最近の相手の反応を見ていきましょう。";
+    }else{
         comment =
         "現時点では、恋愛感情があるともないとも断定しにくい状態です。";
 
         action =
         "急いで結論を出さず、自然な会話や交流を増やして相手の反応を確認しましょう。";
-
     }
+}
+
     else if(score >= 25){
 
         level =
@@ -2284,24 +2521,35 @@ uniqueNegativeWords.forEach(word => {
 
     let signText = "";
 
-    if(positiveCount > negativeCount){
+if(
+    uniqueStrongNegativeWords.length > 0 &&
+    positiveCount > 0
+){
 
-        signText =
-        "💡 好意を感じさせるサインが、マイナス要素より多く見つかりました。";
+    signText =
+    "💡 好意的なサインもある一方で、明確なマイナス要素も見られます。";
 
-    }
-    else if(negativeCount > positiveCount){
+}
+else if(positiveCount > negativeCount){
 
-        signText =
-        "💡 現在は、距離を感じさせるサインのほうがやや多く見つかりました。";
+    signText =
+    "💡 好意を感じさせるサインが、マイナス要素より多く見つかりました。";
 
-    }
-    else{
+}
+else if(negativeCount > positiveCount){
 
-        signText =
-        "💡 好意・非好意どちらのサインも決め手が少ない状態です。";
+    signText =
+    "💡 現在は、距離を感じさせるサインのほうがやや多く見つかりました。";
 
-    }
+}
+else{
+
+    signText =
+    "💡 好意・非好意どちらのサインも決め手が少ない状態です。";
+
+}
+
+  
 
 
     /* ==============================
@@ -3561,6 +3809,9 @@ for(let word of heavyTroubleKeywords){
 const positiveKeywords = [
     "好きと言われた",
     "好きって言われた",
+    "好きと言われました",
+    "相手から好きと言われた",
+    "相手から好きと言われました",
     "告白された",
     "付き合えた",
     "付き合うことになった",
