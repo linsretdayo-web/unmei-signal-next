@@ -1780,8 +1780,15 @@ const romanticLoveWords = [
     "恋愛対象として好きと言われた",
     "恋愛対象として好きと言われました",
     "異性として好きと言われた",
-    "異性として好きと言われました"
+    "異性として好きと言われました",
+    "好きと言われた",
+    "好きと言われました",
+    "好きって言われた",
+    "好きって言われました",
+    "相手から好きと言われた",
+    "相手から好きと言われました"
 ];
+
 
 // 明確な告白・交際希望
 const confessionWords = [
@@ -1850,6 +1857,10 @@ if(confessionMatched){
         "向こうから食事に誘われました",
         "相手からご飯に誘われた",
         "相手からご飯に誘われました",
+        "相手から二人でご飯に行こうと誘われた",
+        "相手から二人でご飯に行こうと誘われました",
+        "二人でご飯に行こうと誘われた",
+        "二人でご飯に行こうと誘われました",
         "向こうからご飯に誘われた",
         "向こうからご飯に誘われました",
         "相手からディナーに誘われた",
@@ -1927,6 +1938,8 @@ if(confessionMatched){
         "二人きり",
         "距離が近い",
         "よく笑ってくれる",
+        "よく笑ってくれます",
+        "よく笑ってくれて",
         "よく笑う",
         "予定を聞かれた",
         "休日を聞かれた",
@@ -1965,7 +1978,14 @@ if(confessionMatched){
         "未読無視",
         "既読スルー",
         "返信が遅い",
+        "返信が遅くなった",
+        "返信が遅くて",
+        "返信が遅くなり",
+        "返信が遅くなりました",
         "返事が遅い",
+        "返事が遅くなった",
+        "返事が遅くなり",
+        "返事が遅くなりました",   
         "避けられる",
         "避けられている",
         "避けられていて",
@@ -1975,10 +1995,13 @@ if(confessionMatched){
         "話しかけてくれない",
         "そっけない",
         "素っ気ない",
+        "そっけなかった",
+        "素っ気なかった",
         "冷たい",
         "誘いを断られた",
         "デートを断られた",
         "断られた",
+        "断られます",
         "連絡が来ない",
         "連絡してこない",
         "LINEが来ない",
@@ -1987,6 +2010,9 @@ if(confessionMatched){
         "LINEの返信もありません",
         "LINEの返信がありません",
         "返事がない",
+        "返事が来ない",
+        "返事が来ません",
+        "返事が来ないことが多い",
         "興味なさそう",
         "興味がなさそう",
         "距離を置かれている",
@@ -2031,6 +2057,12 @@ const weakNegativeWords = [
         "恋愛対象じゃない",
         "恋愛対象ではない",
         "恋愛対象に見られない",
+        "恋愛対象として見ていない",
+        "恋愛対象として見ていないと言われた",
+        "恋愛対象として見ていないと言われました",
+        "恋愛対象としては見ていない",
+        "恋愛対象としては見ていないと言われた",
+        "恋愛対象としては見ていないと言われました",
         "付き合えないと言われた",
         "付き合う気はないと言われた",
         "友達としか見れない",
@@ -2044,12 +2076,24 @@ const weakNegativeWords = [
         "断られることが多い",
         "断られることが多いです",
         "何度も断られる",
+        "何度も断られます",
+        "何度も断られています",
+        "何度も断られている",
         "よく断られる",
+        "よく断られます",
+        "毎回断られる",
+        "毎回断られます",
         "告白したら断られた",
         "告白したら断られました",
         "恋愛対象として見られない",
         "恋愛対象として見られないと言われた",
         "恋愛対象として見られないと言われました",
+        "二人では会いたくない",
+        "二人では会いたくないと言われた",
+        "二人では会いたくないと言われました",
+        "二人きりでは会いたくない",
+        "二人きりでは会いたくないと言われた",
+        "二人きりでは会いたくないと言われました",
         "友達でいたいと言われた",
         "友達でいたいと言われました",
         "これからも友達でいたいと言われた",
@@ -2173,6 +2217,8 @@ const meetingWords = [
     "二人きりで会いました",
     "よく二人で会う",
     "よく二人で会います",
+    "よく二人で会っている",
+    "よく二人で会っています",
     "何度も二人で会った",
     "何度も二人で会いました",
     "二人で何度も会っている",
@@ -2207,6 +2253,8 @@ if(meetingMatched){
 const repeatedMeetingWords = [
     "よく二人で会う",
     "よく二人で会います",
+    "よく二人で会っている",
+    "よく二人で会っています",
     "何度も二人で会った",
     "何度も二人で会いました",
     "二人で何度も会っている",
@@ -2277,7 +2325,9 @@ const invitedActivityWords = [
     "二人で遊びに誘われました",
     "二人で遊びにも誘われた",
     "二人で遊びにも誘われました",
-    "二人で遊びにも誘われます"
+    "二人で遊びにも誘われます",
+    "向こうから二人で遊びに誘われる",
+    "向こうから二人で遊びに誘われます"
 ];
 
 const invitedActivityMatched =
@@ -2289,7 +2339,6 @@ if(invitedActivityMatched){
     score += 7;
     positiveCount++;
 }
-
 
 /* ==============================
    相手からよく誘われる場合の追加ボーナス
@@ -2392,6 +2441,115 @@ if(uniqueStrongNegativeWords.length > 0){
     negativeCount += uniqueStrongNegativeWords.length * 2;
 }
 
+
+/* ==============================
+   過去の告白後に現在の状況が悪化している場合の補正
+============================== */
+
+const afterConfessionNegative =
+    confessionMatched &&
+    negativeCount > 0 &&
+    (
+        question.includes("その後") ||
+        question.includes("最近") ||
+        question.includes("それから") ||
+        question.includes("今は") ||
+        question.includes("今では")
+    );
+
+if(afterConfessionNegative){
+    score -= 10;
+}
+
+/* ==============================
+   過去は悪かったが最近は好転している場合の補正
+============================== */
+
+const recentMarkers = [
+    "最近",
+    "今は",
+    "現在は",
+    "今では"
+];
+
+let recentMarkerIndex = -1;
+
+let recentImproved = false;
+
+recentMarkers.forEach(marker => {
+    const index = question.indexOf(marker);
+
+    if(
+        index !== -1 &&
+        (recentMarkerIndex === -1 || index < recentMarkerIndex)
+    ){
+        recentMarkerIndex = index;
+    }
+});
+
+if(recentMarkerIndex !== -1){
+
+    const pastPart =
+    question.substring(0, recentMarkerIndex);
+
+    const recentPart =
+    question.substring(recentMarkerIndex);
+
+    const hadPastNegative =
+    [
+        ...negativeWords,
+        ...weakNegativeWords,
+        ...strongNegativeWords
+    ].some(word =>
+        pastPart.includes(word)
+    );
+
+    const hasRecentPositive =
+    [
+        ...positiveWords,
+        ...strongPositiveWords,
+        ...meetingWords,
+        ...invitedMealWords,
+        ...invitedActivityWords,
+        ...frequentInviteWords
+    ].some(word =>
+        recentPart.includes(word)
+    );
+
+    if(hadPastNegative && hasRecentPositive){
+    score += 18;
+    recentImproved = true;
+}
+
+const hadPastPositive =
+[
+    ...positiveWords,
+    ...strongPositiveWords,
+    ...meetingWords,
+    ...invitedMealWords,
+    ...invitedActivityWords,
+    ...frequentInviteWords
+].some(word =>
+    pastPart.includes(word)
+);
+
+const hasRecentNegative =
+[
+    ...negativeWords,
+    ...weakNegativeWords,
+    ...strongNegativeWords
+].some(word =>
+    recentPart.includes(word)
+);
+
+if(hadPastPositive && hasRecentNegative){
+    score -= 12;
+}
+
+}
+
+
+
     /* ==============================
        関係性による微調整
     ============================== */
@@ -2412,6 +2570,22 @@ if(uniqueStrongNegativeWords.length > 0){
         score -= 5;
     }
 
+    
+    /* 明確な脈なしサインが複数ある場合の上限補正 */
+if(uniqueStrongNegativeWords.length >= 2){
+    score = Math.min(score, 20);
+}
+
+
+/* 明確な脈なしサインが1つあり、
+   好意的なサインも複数ある場合の上限補正 */
+if(
+    uniqueStrongNegativeWords.length === 1 &&
+    positiveCount >= 3
+){
+    score = Math.min(score, 54);
+}
+
 
     /* 5～95％に制限 */
 
@@ -2430,20 +2604,43 @@ if(uniqueStrongNegativeWords.length > 0){
     let action = "";
 
 
-    if(score >= 85){
+    
+if(uniqueStrongNegativeWords.length >= 2){
 
-        level =
-        "💖 脈あり度：かなり高い";
+    level =
+    "🌙 脈あり度：かなり低い";
+
+    comment =
+    "相手から恋愛対象ではないことを示す明確な反応が複数見られます。現時点では、恋愛関係に進展する可能性は低い状態です。";
+
+    action =
+    "無理に距離を縮めようとせず、相手の意思と距離感を尊重しましょう。しばらく恋愛的なアプローチは控えるのがおすすめです。";
+
+}
+else if(score >= 85){
+
+    level =
+    "💖 脈あり度：かなり高い";
+
+    if(confessionMatched || romanticLoveMatched){
 
         comment =
-        "相手からの好意を感じさせるサインがかなり多く見られます。" +
-        "恋愛関係に進展する可能性が高い状態です。";
+        "相手から好意を直接伝えられているため、恋愛感情を持たれている可能性はかなり高い状態です。さらに、連絡や誘いなどの好意的なサインも見られます。";
 
         action =
-        "今の良い雰囲気を保ちながら、二人で会う機会を増やしたり、" +
-        "少しずつ好意を伝えてみるのがおすすめです。";
+        "あなたにも好意があるなら、自分の気持ちを素直に伝えて、これからの関係について話してみるのがおすすめです。";
+
+    }else{
+
+        comment =
+        "相手からの好意を感じさせるサインがかなり多く見られます。恋愛関係に進展する可能性が高い状態です。";
+
+        action =
+        "今の良い雰囲気を保ちながら、二人で会う機会を増やしたり、少しずつ好意を伝えてみるのがおすすめです。";
 
     }
+}
+
     else if(score >= 70){
 
         level =
@@ -2462,11 +2659,30 @@ if(uniqueStrongNegativeWords.length > 0){
         level =
         "💗 脈あり度：やや高め";
 
-        comment =
-        "好意の可能性はありますが、まだ友情や親しさとの区別がつきにくい段階です。";
+        if(afterConfessionNegative){
 
-        action =
-        "相手から質問が増えるか、連絡や会話が続くかなど、今後の反応を見ていきましょう。";
+    comment =
+    "以前は明確な好意があった可能性が高い一方で、最近は距離を感じさせる反応も見られます。現在の気持ちは変化している可能性があります。";
+
+    action =
+    "過去の告白だけで判断せず、最近の連絡頻度や会うことへの反応を見ながら、今の相手の気持ちを確認していきましょう。";
+
+}else if(recentImproved){
+
+    comment =
+    "以前は距離を感じる状況だったようですが、最近は好意的な反応が増えており、関係が良い方向へ変化している可能性があります。";
+
+    action =
+    "今の良い流れを大切にしながら、会話や連絡を自然に続けて、少しずつ距離を縮めていきましょう。";
+
+}else{
+
+    comment =
+    "好意の可能性はありますが、まだ友情や親しさとの区別がつきにくい段階です。";
+
+    action =
+    "相手から質問が増えるか、連絡や会話が続くかなど、今後の反応を見ていきましょう。";
+}
 
     }
 
@@ -2480,6 +2696,7 @@ if(uniqueStrongNegativeWords.length > 0){
 
         action =
         "過去の好意だけで判断せず、現在の連絡頻度や接し方など、最近の相手の反応を見ていきましょう。";
+
     }else{
         comment =
         "現時点では、恋愛感情があるともないとも断定しにくい状態です。";
@@ -2528,27 +2745,33 @@ if(
 
     signText =
     "💡 好意的なサインもある一方で、明確なマイナス要素も見られます。";
-
 }
-else if(positiveCount > negativeCount){
+
+else if(positiveCount > 0 && negativeCount > 0){
 
     signText =
-    "💡 好意を感じさせるサインが、マイナス要素より多く見つかりました。";
+    "💡 好意を感じさせるサインと、距離を感じさせるサインの両方が見られます。";
 
 }
-else if(negativeCount > positiveCount){
+else if(positiveCount > 0){
 
     signText =
-    "💡 現在は、距離を感じさせるサインのほうがやや多く見つかりました。";
+    "💡 好意を感じさせるサインが複数見つかりました。";
 
 }
+else if(negativeCount > 0){
+
+    signText =
+    "💡 距離を感じさせるサインが見つかりました。";
+
+}
+
 else{
 
     signText =
-    "💡 好意・非好意どちらのサインも決め手が少ない状態です。";
+    "💡 好意・非好意どちらのサインも決め手が少ない状態です.";
 
 }
-
   
 
 
