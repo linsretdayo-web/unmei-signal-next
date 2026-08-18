@@ -2002,6 +2002,7 @@ if(confessionMatched){
         "デートを断られた",
         "断られた",
         "断られます",
+        "断られました",
         "連絡が来ない",
         "連絡してこない",
         "LINEが来ない",
@@ -2247,6 +2248,60 @@ if(meetingMatched){
 
 
 /* ==============================
+   毎日連絡が来る場合の追加ボーナス
+============================== */
+
+const dailyContactWords = [
+    "毎日LINE",
+    "毎日ライン",
+    "毎日連絡",
+    "毎日LINEが来る",
+    "毎日LINEが来ます",
+    "相手から毎日LINEが来る",
+    "相手から毎日LINEが来ます",
+    "向こうから毎日LINEが来る",
+    "向こうから毎日LINEが来ます"
+];
+
+const dailyContactMatched =
+dailyContactWords.some(word =>
+    question.includes(word)
+);
+
+if(dailyContactMatched){
+    score += 5;
+    positiveCount++;
+}
+
+
+/* ==============================
+   毎日連絡＋質問が多い場合の追加ボーナス
+============================== */
+
+const questionInterestWords = [
+    "よく質問される",
+    "よく質問もされて",
+    "よく質問されて",
+    "よく質問されます",
+    "よく質問もされる",
+    "よく質問もされます",
+    "よく質問してくる",
+    "質問してくる",
+    "いろいろ聞いてくる"
+];
+
+const questionInterestMatched =
+questionInterestWords.some(word =>
+    question.includes(word)
+);
+
+if(dailyContactMatched && questionInterestMatched){
+    score += 5;
+    positiveCount++;
+}
+
+
+/* ==============================
    継続して二人で会っている場合の追加ボーナス
 ============================== */
 
@@ -2281,6 +2336,8 @@ const invitedMealWords = [
     "相手から食事に誘われました",
     "二人で食事にも誘われた",
     "二人で食事にも誘われました",
+    "二人で食事に誘われた",
+    "二人で食事に誘われました",
     "向こうから食事に誘われた",
     "向こうから食事に誘われました",
     "相手からご飯に誘われた",
@@ -2466,11 +2523,14 @@ if(afterConfessionNegative){
 ============================== */
 
 const recentMarkers = [
+    "その後",
+    "それから",
     "最近",
     "今は",
     "現在は",
     "今では"
 ];
+
 
 let recentMarkerIndex = -1;
 
@@ -2571,6 +2631,49 @@ if(hadPastPositive && hasRecentNegative){
     }
 
     
+/* ==============================
+   告白を断られた後に状況が好転している場合の上限補正
+============================== */
+
+const rejectedConfession =
+    question.includes("告白を断られた") ||
+    question.includes("告白を断られました") ||
+    question.includes("告白したら断られた") ||
+    question.includes("告白したら断られました") ||
+    question.includes("告白して振られた") ||
+    question.includes("告白して振られました");
+
+if(rejectedConfession && recentImproved){
+    score = Math.min(score, 72);
+}
+
+
+/* ==============================
+   強い好意サインが複数そろっている場合の補正
+============================== */
+
+const strongProgressCase =
+    !rejectedConfession &&
+    dailyContactMatched &&
+    questionInterestMatched &&
+    (
+        question.includes("何度も食事") ||
+        question.includes("何度も二人で食事") ||
+        question.includes("二人で何度も食事")
+    ) &&
+    (
+        question.includes("また二人で会おう") ||
+        question.includes("また二人で会いたい") ||
+        question.includes("相手からデートに誘われ") ||
+        question.includes("向こうからデートに誘われ")
+    );
+
+if(strongProgressCase){
+    score = Math.max(score, 80);
+}
+
+
+
     /* 明確な脈なしサインが複数ある場合の上限補正 */
 if(uniqueStrongNegativeWords.length >= 2){
     score = Math.min(score, 20);
