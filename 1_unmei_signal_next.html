@@ -236,8 +236,11 @@ input:focus{
 /* ===== 履歴エリアのデザイン強化 ===== */
 
 /* 相談履歴とお気に入り履歴の共通カード */
+
 #historyBox,
+#interestHistoryBox,
 #favoriteBox{
+
     position:relative;
     overflow:hidden;
     border:1px solid rgba(255, 214, 239, 0.28);
@@ -253,8 +256,11 @@ input:focus{
 }
 
 /* 履歴カードの淡い光 */
+
 #historyBox::before,
+#interestHistoryBox::before,
 #favoriteBox::before{
+
     content:"";
     position:absolute;
     top:-100px;
@@ -268,8 +274,11 @@ input:focus{
 }
 
 /* 履歴タイトル */
+
 #historyTitle,
+#interestHistoryTitle,
 #favoriteTitle{
+
     position:relative;
     z-index:1;
     display:flex;
@@ -310,8 +319,11 @@ input:focus{
 }
 
 /* 履歴削除ボタン */
+
 #historyBox > button,
+#interestHistoryBox > button,
 #favoriteBox > button{
+
     position:relative;
     z-index:1;
     border:1px solid rgba(255,255,255,0.18);
@@ -331,8 +343,11 @@ input:focus{
 }
 
 /* 削除ボタンにマウスを乗せた時 */
+
 #historyBox > button:hover,
+#interestHistoryBox > button:hover,
 #favoriteBox > button:hover{
+
     opacity:1;
     transform:translateY(-2px);
     filter:brightness(1.08);
@@ -355,20 +370,26 @@ input:focus{
 }
 
 /* パソコン画面で履歴部分が広がりすぎないよう調整 */
+
 #historyBox,
+#interestHistoryBox,
 #favoriteBox{
     padding:26px;
 }
 
+ 
+
 /* スマホ用 */
 @media(max-width:600px){
     #historyBox,
+    #interestHistoryBox,
     #favoriteBox{
         padding:20px;
         border-radius:18px;
     }
 
     #historyTitle,
+    #interestHistoryTitle,
     #favoriteTitle{
         font-size:22px;
     }
@@ -377,8 +398,10 @@ input:focus{
 
 /* ===== 履歴カードの区切りを強化 ===== */
 
+#interestHistoryBox,
 #favoriteBox{
     margin-top:34px !important;
+
     border:1px solid rgba(255, 224, 244, 0.42);
     box-shadow:
         0 20px 45px rgba(22, 12, 68, 0.34),
@@ -390,7 +413,9 @@ input:focus{
     margin-bottom:30px;
 }
 
-#historyBox::after{
+#historyBox::after,
+#interestHistoryBox::after{
+
     content:"";
     position:absolute;
     left:7%;
@@ -738,8 +763,11 @@ input:focus{
 /* ===== 履歴1件ごとのカードを強化 ===== */
 
 /* 相談履歴・お気に入り履歴の各カード */
+
 #historyList > div,
+#interestHistoryList > div,
 #favoriteList > div{
+
     position:relative;
     overflow:hidden;
     padding:20px !important;
@@ -758,8 +786,11 @@ input:focus{
 }
 
 /* カード左側のアクセント */
+
 #historyList > div::before,
+#interestHistoryList > div::before,
 #favoriteList > div::before{
+
     content:"";
     position:absolute;
     top:0;
@@ -792,8 +823,11 @@ input:focus{
 }
 
 /* 履歴カード内のボタン */
+
 #historyList button,
+#interestHistoryList button,
 #favoriteList button{
+
     width:auto;
     min-width:130px;
     margin-top:14px;
@@ -813,8 +847,11 @@ input:focus{
 }
 
 /* ボタンにマウスを乗せた時 */
+
 #historyList button:hover,
+#interestHistoryList button:hover,
 #favoriteList button:hover{
+
     opacity:1;
     transform:translateY(-2px);
     filter:brightness(1.08);
@@ -1060,6 +1097,9 @@ style="display:block; margin-top:30px;">
 </button>
 
 
+</div>
+
+
 <div class="result" id="interestHistoryBox" style="display:block; margin-top:30px;">
 
 <h2 id="interestHistoryTitle">💘 脈あり度診断履歴</h2>
@@ -1145,7 +1185,6 @@ line-height:1.8;
 
 </div>
 
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
@@ -1677,8 +1716,12 @@ function saveDiagnosisImage(){
     const imageButton =
     document.querySelector('button[onclick="saveDiagnosisImage()"]');
 
+    const shareButton =
+    document.querySelector('button[onclick="shareDiagnosisResult()"]');
+
     if(copyButton) copyButton.style.display = "none";
     if(imageButton) imageButton.style.display = "none";
+    if(shareButton) shareButton.style.display = "none";
 
     html2canvas(resultBox,{
         scale:2,
@@ -1699,11 +1742,13 @@ function saveDiagnosisImage(){
 
         if(copyButton) copyButton.style.display = "";
         if(imageButton) imageButton.style.display = "";
+        if(shareButton) shareButton.style.display = "";
 
     }).catch(function(){
 
         if(copyButton) copyButton.style.display = "";
         if(imageButton) imageButton.style.display = "";
+        if(shareButton) shareButton.style.display = "";
 
         alert("⚠️ 画像を保存できませんでした。");
     });
@@ -3160,8 +3205,6 @@ document.getElementById("dailyScore");
 const dailyMessage =
 document.getElementById("dailyMessage");
 
-const dailyColor =
-document.getElementById("dailyColor");
 
 const dailyItem =
 document.getElementById("dailyItem");
