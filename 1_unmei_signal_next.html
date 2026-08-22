@@ -237,8 +237,10 @@ input:focus{
 
 /* 相談履歴とお気に入り履歴の共通カード */
 
+
 #historyBox,
 #interestHistoryBox,
+#interestFavoriteBox,
 #favoriteBox{
 
     position:relative;
@@ -259,6 +261,7 @@ input:focus{
 
 #historyBox::before,
 #interestHistoryBox::before,
+#interestFavoriteBox::before,
 #favoriteBox::before{
 
     content:"";
@@ -277,7 +280,9 @@ input:focus{
 
 #historyTitle,
 #interestHistoryTitle,
+#interestFavoriteTitle,
 #favoriteTitle{
+
 
     position:relative;
     z-index:1;
@@ -322,6 +327,7 @@ input:focus{
 
 #historyBox > button,
 #interestHistoryBox > button,
+#interestFavoriteBox > button,
 #favoriteBox > button{
 
     position:relative;
@@ -346,6 +352,7 @@ input:focus{
 
 #historyBox > button:hover,
 #interestHistoryBox > button:hover,
+#interestFavoriteBox > button:hover,
 #favoriteBox > button:hover{
 
     opacity:1;
@@ -373,16 +380,17 @@ input:focus{
 
 #historyBox,
 #interestHistoryBox,
+#interestFavoriteBox,
 #favoriteBox{
     padding:26px;
 }
-
  
 
 /* スマホ用 */
 @media(max-width:600px){
     #historyBox,
     #interestHistoryBox,
+    #interestFavoriteBox,
     #favoriteBox{
         padding:20px;
         border-radius:18px;
@@ -390,6 +398,7 @@ input:focus{
 
     #historyTitle,
     #interestHistoryTitle,
+    #interestFavoriteTitle,
     #favoriteTitle{
         font-size:22px;
     }
@@ -399,7 +408,9 @@ input:focus{
 /* ===== 履歴カードの区切りを強化 ===== */
 
 #interestHistoryBox,
+#interestFavoriteBox,
 #favoriteBox{
+
     margin-top:34px !important;
 
     border:1px solid rgba(255, 224, 244, 0.42);
@@ -414,7 +425,8 @@ input:focus{
 }
 
 #historyBox::after,
-#interestHistoryBox::after{
+#interestHistoryBox::after,
+#interestFavoriteBox::after{
 
     content:"";
     position:absolute;
@@ -764,8 +776,10 @@ input:focus{
 
 /* 相談履歴・お気に入り履歴の各カード */
 
+
 #historyList > div,
 #interestHistoryList > div,
+#interestFavoriteList > div,
 #favoriteList > div{
 
     position:relative;
@@ -789,6 +803,7 @@ input:focus{
 
 #historyList > div::before,
 #interestHistoryList > div::before,
+#interestFavoriteList > div::before,
 #favoriteList > div::before{
 
     content:"";
@@ -806,14 +821,22 @@ input:focus{
 }
 
 /* 日付やジャンルを見やすくする */
+
 #historyList > div > b,
+#interestHistoryList > div > b,
+#interestFavoriteList > div > b,
 #favoriteList > div > b{
     color:#fff4fb;
 }
 
+
 /* 履歴内の解析結果部分 */
+
 #historyList > div > div,
+#interestHistoryList > div > div,
+#interestFavoriteList > div > div,
 #favoriteList > div > div{
+
     margin-top:7px;
     padding:15px !important;
     border-radius:12px;
@@ -826,6 +849,7 @@ input:focus{
 
 #historyList button,
 #interestHistoryList button,
+#interestFavoriteList button,
 #favoriteList button{
 
     width:auto;
@@ -850,7 +874,9 @@ input:focus{
 
 #historyList button:hover,
 #interestHistoryList button:hover,
+#interestFavoriteList button:hover,
 #favoriteList button:hover{
+
 
     opacity:1;
     transform:translateY(-2px);
@@ -1115,6 +1141,24 @@ style="display:block; margin-top:30px;">
 </button>
 
 </div>
+
+
+<div class="result" id="interestFavoriteBox" style="display:block; margin-top:30px;">
+
+<h2 id="interestFavoriteTitle">💘 脈ありお気に入り</h2>
+
+<div id="interestFavoriteList">
+まだ脈ありお気に入りはありません。
+</div>
+
+<br>
+
+<button type="button" onclick="clearInterestFavorites()">
+🗑 脈ありお気に入りを全削除
+</button>
+
+</div>
+
 
 <div class="result" id="favoriteBox" style="display:block; margin-top:30px;">
 
@@ -1801,8 +1845,15 @@ function shareDiagnosisResult(){
 
 function analyzeInterest(){
 
-    const question =
-    document.getElementById("question").value.trim();
+    let question =
+document.getElementById("question").value.trim();
+
+// ===== 脈あり診断：入力文の表記ゆれを正規化 =====
+question = question
+    .normalize("NFKC")
+    .replace(/良く/g, "よく")
+    .replace(/\s+/g, " ")
+    .trim();
 
     const relationship =
     document.getElementById("relationship").value;
@@ -1818,6 +1869,45 @@ function analyzeInterest(){
     let score = 50;
     let positiveCount = 0;
     let negativeCount = 0;
+
+
+// ===== 脈あり診断：意味単位の共通判定 =====
+
+const hasPartnerInitiative =
+    question.includes("相手から") ||
+    question.includes("向こうから") ||
+    question.includes("あちらから");
+
+const hasTwoPersonSituation =
+    question.includes("二人で") ||
+    question.includes("二人きり") ||
+    question.includes("2人で") ||
+    question.includes("2人きり");
+
+const hasMealSituation =
+    question.includes("食事") ||
+    question.includes("ご飯") ||
+    question.includes("ランチ") ||
+    question.includes("ディナー");
+
+const hasInviteSituation =
+    question.includes("誘われ") ||
+    question.includes("誘ってくる") ||
+    question.includes("誘ってくれ") ||
+    question.includes("誘われる");
+
+const hasContactSituation =
+    question.includes("LINE") ||
+    question.includes("ライン") ||
+    question.includes("連絡") ||
+    question.includes("メッセージ");
+
+const hasHighFrequency =
+    question.includes("毎日") ||
+    question.includes("ほぼ毎日") ||
+    question.includes("毎日のように") ||
+    question.includes("頻繁に") ||
+    question.includes("よく");
 
 
 // 恋愛対象として明確に好意を伝えられた場合
@@ -2284,7 +2374,18 @@ const meetingWords = [
 const meetingMatched =
 meetingWords.some(word =>
     question.includes(word)
+) ||
+(
+    hasMealSituation &&
+    (
+        hasTwoPersonSituation ||
+        question.includes("相手と") ||
+        question.includes("好きな人と") ||
+        question.includes("その人と") ||
+        question.includes("一緒に")
+    )
 );
+
 
 if(meetingMatched){
     score += 8;
@@ -2311,7 +2412,13 @@ const dailyContactWords = [
 const dailyContactMatched =
 dailyContactWords.some(word =>
     question.includes(word)
+) ||
+(
+    hasPartnerInitiative &&
+    hasContactSituation &&
+    hasHighFrequency
 );
+
 
 if(dailyContactMatched){
     score += 5;
@@ -2364,7 +2471,19 @@ const repeatedMeetingWords = [
 const repeatedMeetingMatched =
 repeatedMeetingWords.some(word =>
     question.includes(word)
+) ||
+(
+    hasMealSituation &&
+    hasHighFrequency &&
+    (
+        hasTwoPersonSituation ||
+        question.includes("相手と") ||
+        question.includes("好きな人と") ||
+        question.includes("その人と") ||
+        question.includes("一緒に")
+    )
 );
+
 
 if(repeatedMeetingMatched){
     score += 4;
@@ -2402,7 +2521,13 @@ const invitedMealWords = [
 const invitedMealMatched =
 invitedMealWords.some(word =>
     question.includes(word)
+) ||
+(
+    hasPartnerInitiative &&
+    hasMealSituation &&
+    hasInviteSituation
 );
+
 
 if(invitedMealMatched){
     score += 7;
@@ -2435,12 +2560,36 @@ const invitedActivityWords = [
 const invitedActivityMatched =
 invitedActivityWords.some(word =>
     question.includes(word)
+) ||
+(
+    hasPartnerInitiative &&
+    hasInviteSituation &&
+    hasTwoPersonSituation &&
+    (
+        question.includes("遊び") ||
+        question.includes("出かけ") ||
+        question.includes("お出かけ")
+    )
 );
 
 if(invitedActivityMatched){
     score += 7;
     positiveCount++;
 }
+
+
+// ===== 相手発信＋二人＋高頻度の誘いは強めに評価 =====
+const strongActivityInvite =
+    invitedActivityMatched &&
+    hasPartnerInitiative &&
+    hasTwoPersonSituation &&
+    hasHighFrequency;
+
+if(strongActivityInvite){
+    score = Math.max(score, 65);
+    positiveCount++;
+}
+
 
 /* ==============================
    相手からよく誘われる場合の追加ボーナス
@@ -2680,16 +2829,26 @@ if(hadPastPositive && hasRecentNegative){
    告白を断られた後に状況が好転している場合の上限補正
 ============================== */
 
-const rejectedConfession =
-    question.includes("告白を断られた") ||
-    question.includes("告白を断られました") ||
-    question.includes("告白したら断られた") ||
-    question.includes("告白したら断られました") ||
-    question.includes("告白して振られた") ||
-    question.includes("告白して振られました");
 
-if(rejectedConfession && recentImproved){
-    score = Math.min(score, 72);
+const rejectedConfession =
+    (
+        question.includes("告白") &&
+        (
+            question.includes("断られ") ||
+            question.includes("振られ") ||
+            question.includes("ダメだった") ||
+            question.includes("断られて")
+        )
+    );
+
+
+
+if(rejectedConfession){
+    if(recentImproved){
+        score = Math.min(score, 72);
+    }else{
+        score = Math.min(score, 58);
+    }
 }
 
 
@@ -2715,6 +2874,16 @@ const strongProgressCase =
 
 if(strongProgressCase){
     score = Math.max(score, 80);
+}
+
+
+// ===== 明確な告白・好意表明がない場合の上限 =====
+if(
+    !romanticLoveMatched &&
+    !confessionMatched &&
+    !rejectedConfession
+){
+    score = Math.min(score, 85);
 }
 
 
@@ -3120,16 +3289,110 @@ function showInterestHistory(){
             ${item.signText}<br><br>
 
             <b>💌 おすすめ行動</b><br>
-            ${item.action}<br><br>
+${item.action}<br><br>
 
-            <button type="button" onclick="deleteInterestHistory(${index})">
-            🗑 この履歴を削除
-            </button>
+<div class="history-button-row">
+
+    <button type="button" onclick="saveInterestFavorite(${index})">
+    ⭐ お気に入り保存
+    </button>
+
+    <button type="button" onclick="deleteInterestHistory(${index})">
+    🗑 この履歴を削除
+    </button>
+
+</div>
+
 
         </div>
         `;
     });
 }
+
+
+function saveInterestFavorite(index){
+
+    let histories =
+    JSON.parse(localStorage.getItem("interestHistories")) || [];
+
+    let favorites =
+    JSON.parse(localStorage.getItem("interestFavorites")) || [];
+
+    const target = histories[index];
+
+    if(!target){
+        alert("⚠️ 保存する診断を取得できませんでした。");
+        return;
+    }
+
+    const isDuplicate = favorites.some(item =>
+        item.date === target.date &&
+        item.question === target.question &&
+        item.score === target.score
+    );
+
+    if(isDuplicate){
+        alert("⚠️ すでに脈ありお気に入りに保存されています。");
+        return;
+    }
+
+    favorites.unshift(target);
+
+    if(favorites.length > 100){
+        favorites = favorites.slice(0,100);
+    }
+
+    localStorage.setItem(
+        "interestFavorites",
+        JSON.stringify(favorites)
+    );
+
+    showInterestFavorites();
+
+    alert("⭐ 脈あり診断をお気に入りに保存しました！");
+}
+
+
+
+function deleteInterestFavorite(index){
+
+    let favorites =
+    JSON.parse(localStorage.getItem("interestFavorites")) || [];
+
+    if(confirm("この脈ありお気に入りを削除しますか？")){
+
+        favorites.splice(index,1);
+
+        localStorage.setItem(
+            "interestFavorites",
+            JSON.stringify(favorites)
+        );
+
+        showInterestFavorites();
+    }
+}
+
+
+
+function clearInterestFavorites(){
+
+    let favorites =
+    JSON.parse(localStorage.getItem("interestFavorites")) || [];
+
+    if(favorites.length === 0){
+        alert("脈ありお気に入りはありません。");
+        return;
+    }
+
+    if(confirm("脈ありお気に入りをすべて削除しますか？")){
+
+        localStorage.removeItem("interestFavorites");
+
+        showInterestFavorites();
+    }
+}
+
+
 
 
 function deleteInterestHistory(index){
@@ -3162,6 +3425,82 @@ function clearInterestHistory(){
 }
 
 
+function showInterestFavorites(){
+
+    const favoriteList =
+    document.getElementById("interestFavoriteList");
+
+    const favoriteTitle =
+    document.getElementById("interestFavoriteTitle");
+
+    if(!favoriteList || !favoriteTitle){
+        return;
+    }
+
+    let favorites =
+    JSON.parse(localStorage.getItem("interestFavorites")) || [];
+
+    favoriteTitle.innerText =
+    "💘 脈ありお気に入り（" + favorites.length + "件）";
+
+    if(favorites.length === 0){
+        favoriteList.innerHTML =
+        "まだ脈ありお気に入りはありません。";
+        return;
+    }
+
+    favoriteList.innerHTML = "";
+
+    const relationshipNames = {
+        new: "知り合ったばかり",
+        friend: "友達",
+        schoolWork: "職場・学校の知り合い",
+        dating: "何度かデートしている",
+        lover: "恋人",
+        ex: "元恋人"
+    };
+
+    favorites.forEach((item,index)=>{
+
+        const relationshipText =
+        relationshipNames[item.relationship] || "未設定";
+
+        favoriteList.innerHTML += `
+        <div style="
+            background:rgba(255,255,255,0.10);
+            padding:18px;
+            border-radius:14px;
+            margin-bottom:16px;
+            line-height:1.8;
+            word-break:break-word;
+            overflow-wrap:anywhere;
+        ">
+
+            <b>📅 ${item.date}</b><br>
+            <b>💞 相手との関係性：</b>${relationshipText}<br><br>
+
+            <b>相談内容</b><br>
+            ${item.question}<br><br>
+
+            <b>💘 脈あり度：${item.score}%</b><br>
+            ${item.level}<br><br>
+
+            ${item.comment}<br>
+            ${item.signText}<br><br>
+
+            <b>💌 おすすめ行動</b><br>
+            ${item.action}<br><br>
+
+            <button type="button" onclick="deleteInterestFavorite(${index})">
+            🗑 このお気に入りを削除
+            </button>
+
+        </div>
+        `;
+    });
+}
+
+
 
 
 window.onload = function(){
@@ -3169,9 +3508,10 @@ window.onload = function(){
     showHistory();
     showFavorites();
     showInterestHistory();
-
+    showInterestFavorites();
 
 }
+
 
 function analyzeLove(){
 
@@ -4036,6 +4376,7 @@ const loveKeywords = [
 "公園デート",
 "散歩",
 "映画",
+"映画館",
 "花火大会",
 "夏祭り",
 "買い物",
@@ -4065,6 +4406,11 @@ if(!hasLoveKeyword){
 ============================== */
 
 const pastActionWords = [
+    
+    "に誘った",
+    "に誘いました",
+    "へ誘った",
+    "へ誘いました",
     "に行った",
     "に行きました",
     "へ行った",
@@ -4249,72 +4595,82 @@ signalIndex.innerText =
 "運命シグナル指数：72 / 100";
 signalBar.style.width = "72%";
 
+}
+
+
 if(question.includes("二人きり")){
-    lovePower.innerText = "90%";
-    loveBar.style.width = "90%";
+    
+    lovePower.innerText = "78%";
+    loveBar.style.width = "78%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：85%";
-    successBar.style.width = "85%";
+    "💘 恋愛成就確率：70%";
+    successBar.style.width = "70%";
 
     signalIndex.innerText =
-    "運命シグナル指数：88 / 100";
-    signalBar.style.width = "88%";
+    "運命シグナル指数：74 / 100";
+    signalBar.style.width = "74%";
+
 }
 
 if(question.includes("笑ってくれた") || question.includes("笑顔")){
-    lovePower.innerText = "85%";
-    loveBar.style.width = "85%";
+    lovePower.innerText = "68%";
+　　loveBar.style.width = "68%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：80%";
-    successBar.style.width = "80%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：60%";
+　　successBar.style.width = "60%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：83 / 100";
-    signalBar.style.width = "83%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：65 / 100";
+　　signalBar.style.width = "65%";
+
 }
 
 if(question.includes("LINE交換") ||
    question.includes("ライン交換") ||
    question.includes("連絡先交換")){
 
-    lovePower.innerText = "95%";
-    loveBar.style.width = "95%";
+    lovePower.innerText = "72%";
+    loveBar.style.width = "72%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：90%";
-    successBar.style.width = "90%";
+    "💘 恋愛成就確率：64%";
+    successBar.style.width = "64%";
 
     signalIndex.innerText =
-    "運命シグナル指数：93 / 100";
-    signalBar.style.width = "93%";
-}
+    "運命シグナル指数：69 / 100";
+    signalBar.style.width = "69%";
+
 
 }
 
 
 if(question.includes("デートに誘われた") ||
-   question.includes("誘われた")){
+   question.includes("デートに誘われました") ||
+   question.includes("誘われた") ||
+   question.includes("誘われました")){
 
     isPositive = false;
     isSuperPositive = false;
+    isScenarioCase = true;
 
     level = "💖 シグナルレベル：★★★★★";
 
-    lovePower.innerText = "98%";
-    loveBar.style.width = "98%";
+    lovePower.innerText = "76%";
+    loveBar.style.width = "76%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：95%";
-    successBar.style.width = "95%";
+    "💘 恋愛成就確率：68%";
+    successBar.style.width = "68%";
 
     signalIndex.innerText =
-    "運命シグナル指数：97 / 100";
-    signalBar.style.width = "97%";
+    "運命シグナル指数：73 / 100";
+    signalBar.style.width = "73%";
+ 
 
     finalJudge.innerText =
-    "相手からのアプローチは非常に強い好意のサインです。恋愛運は最高潮に近づいています。";
+    "相手から誘われたことは前向きなサインです。ただし、誘いだけで恋愛感情が確定するわけではないため、その後の反応も合わせて見ていきましょう。";
 }
 
 
@@ -4441,16 +4797,16 @@ else if(question.includes("よく目が合う") ||
     answer =
     "今の運命シグナルは『お互いを意識し始めている段階』です。目が何度も合うことは、相手があなたの存在を意識している可能性があります。ただし、まだ好意と断定せず、自然なやり取りを増やしていくことが大切です。";
 
-    lovePower.innerText = "82%";
-    loveBar.style.width = "82%";
+   lovePower.innerText = "72%";
+   loveBar.style.width = "72%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：74%";
-    successBar.style.width = "74%";
+   successRate.innerText =
+   "💘 恋愛成就確率：62%";
+   successBar.style.width = "62%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：80 / 100";
-    signalBar.style.width = "80%";
+   signalIndex.innerText =
+   "運命シグナル指数：68 / 100";
+   signalBar.style.width = "68%";
 
     finalJudge.innerText =
     "目がよく合うことは前向きなサインですが、それだけで恋愛感情とは限りません。今後の会話や笑顔なども合わせて判断すると、より正確に相手の気持ちが見えてくるでしょう。";
@@ -4531,16 +4887,16 @@ else if(question.includes("LINEの返信が早いです") ||
     answer =
     "今の運命シグナルは『相手があなたとのやり取りを前向きに感じている段階』です。返信が早いことは、相手があなたとの連絡を大切にしている可能性があります。ただし、返信速度だけで好意を決めつけず、内容や会話の続き方も合わせて見ることが大切です。";
 
-    lovePower.innerText = "82%";
-    loveBar.style.width = "82%";
+    lovePower.innerText = "72%";
+　　loveBar.style.width = "72%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：74%";
-    successBar.style.width = "74%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：63%";
+　　successBar.style.width = "63%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：80 / 100";
-    signalBar.style.width = "80%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：69 / 100";
+　　signalBar.style.width = "69%";
 
     finalJudge.innerText =
     "返信が早いのはかなり前向きなサインです。特に相手から質問が返ってきたり、会話を続けようとする内容があるなら、脈ありの可能性は高めです。";
@@ -4576,16 +4932,16 @@ else if(question.includes("プレゼントを渡したいです") ||
     answer =
     "今の運命シグナルは『好意を自然に伝えられる時期』です。プレゼントは相手への気持ちを伝える良いきっかけになります。ただし、高価すぎる物よりも、相手が気軽に受け取れる物を選ぶ方が好印象につながりやすいでしょう。";
 
-    lovePower.innerText = "80%";
-    loveBar.style.width = "80%";
+    lovePower.innerText = "68%";
+　　loveBar.style.width = "68%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：73%";
-    successBar.style.width = "73%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：58%";
+　　successBar.style.width = "58%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：79 / 100";
-    signalBar.style.width = "79%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：64 / 100";
+　　signalBar.style.width = "64%";
 
     finalJudge.innerText =
     "プレゼントは相手との距離を縮めるきっかけになります。大切なのは値段ではなく、『相手を思って選んだ気持ち』が伝わることです。";
@@ -4625,16 +4981,16 @@ else if(question.includes("誕生日に連絡したいです") ||
     answer =
     "今の運命シグナルは『自然に距離を縮めやすいタイミング』です。誕生日のお祝いは、相手に気持ちを伝えられる良いきっかけになります。短くても心のこもったメッセージなら、好印象につながりやすいでしょう。";
 
-    lovePower.innerText = "81%";
-    loveBar.style.width = "81%";
+    lovePower.innerText = "67%";
+　　loveBar.style.width = "67%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：75%";
-    successBar.style.width = "75%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：57%";
+　　successBar.style.width = "57%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：80 / 100";
-    signalBar.style.width = "80%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：63 / 100";
+　　signalBar.style.width = "63%";
 
     finalJudge.innerText =
     "誕生日は相手との距離を縮めやすい絶好のタイミングです。気持ちを押し付けるのではなく、お祝いする気持ちを素直に伝えることが大切です。";
@@ -10414,14 +10770,14 @@ else if(question.includes("料理教室に誘いたいです") ||
     answer =
     "今の運命シグナルは『協力しながら距離を縮められるタイミング』です。料理教室では自然に役割分担が生まれ、会話も弾みやすいでしょう。";
 
-    lovePower.innerText = "81%";
-    loveBar.style.width = "81%";
+    lovePower.innerText = "70%";
+    loveBar.style.width = "70%";
 
-    successRate.innerText = "💘 恋愛成就確率：73%";
-    successBar.style.width = "73%";
+    successRate.innerText = "💘 恋愛成就確率：60%";
+    successBar.style.width = "60%";
 
-    signalIndex.innerText = "運命シグナル指数：79 / 100";
-    signalBar.style.width = "79%";
+    signalIndex.innerText = "運命シグナル指数：66 / 100";
+   signalBar.style.width = "66%";
 
     finalJudge.innerText = "料理教室デートは協力し合えるため、恋愛の距離を縮めやすいデートです。";
 
@@ -10561,14 +10917,15 @@ else if(question.includes("クルージングデートに誘いたいです") ||
     answer =
     "今の運命シグナルは『ロマンチックな雰囲気に包まれるタイミング』です。クルージングでは非日常の空間が二人の距離を縮めてくれるでしょう。";
 
-    lovePower.innerText = "85%";
-    loveBar.style.width = "85%";
+    lovePower.innerText = "72%";
+    loveBar.style.width = "72%";
 
-    successRate.innerText = "💘 恋愛成就確率：77%";
-    successBar.style.width = "77%";
+    successRate.innerText = "💘 恋愛成就確率：62%";
+    successBar.style.width = "62%";
 
-    signalIndex.innerText = "運命シグナル指数：83 / 100";
-    signalBar.style.width = "83%";
+    signalIndex.innerText = "運命シグナル指数：68 / 100";
+    signalBar.style.width = "68%";
+
 
     finalJudge.innerText = "クルージングデートは恋愛運を高めやすいロマンチックなデートです。";
 
@@ -10610,14 +10967,14 @@ else if(question.includes("展望台デートに誘いたいです") ||
     answer =
     "今の運命シグナルは『恋愛ムードが高まりやすいタイミング』です。展望台では景色を眺めながら自然と距離が縮まり、心が通じ合いやすいでしょう。";
 
-    lovePower.innerText = "84%";
-    loveBar.style.width = "84%";
+    lovePower.innerText = "71%";
+    loveBar.style.width = "71%";
 
-    successRate.innerText = "💘 恋愛成就確率：76%";
-    successBar.style.width = "76%";
+    successRate.innerText = "💘 恋愛成就確率：61%";
+    successBar.style.width = "61%";
 
-    signalIndex.innerText = "運命シグナル指数：82 / 100";
-    signalBar.style.width = "82%";
+    signalIndex.innerText = "運命シグナル指数：67 / 100";
+    signalBar.style.width = "67%";
 
     finalJudge.innerText = "展望台デートはロマンチックな雰囲気が恋愛を後押ししてくれるでしょう。";
 
@@ -13008,18 +13365,16 @@ else if(question.includes("2回目のデート") ||
     answer =
     "今の運命シグナルは『関係が一歩前進する時期』です。2回目のデートは、お互いにもっと知りたいと思っている可能性が高いサインです。";
 
-    lovePower.innerText = "92%";
-    loveBar.style.width = "92%";
+    lovePower.innerText = "82%";
+    loveBar.style.width = "82%";
 
-    
     successRate.innerText =
-    "💘 恋愛成就確率：88%";
-    successBar.style.width = "88%";
-
+    "💘 恋愛成就確率：75%";
+    successBar.style.width = "75%";
 
     signalIndex.innerText =
-    "運命シグナル指数：90 / 100";
-    signalBar.style.width = "90%";
+    "運命シグナル指数：79 / 100";
+    signalBar.style.width = "79%";
 
     finalJudge.innerText =
     "2回目のデートにつながるのは、とても前向きな流れです。自然体で楽しむことが、さらに関係を深めるポイントになります。";
@@ -13050,16 +13405,16 @@ else if(question.includes("3回目のデート") ||
     answer =
     "今の運命シグナルは『恋愛関係へ大きく近づく時期』です。3回目のデートまで続いていることは、お互いに一緒にいる時間を心地良いと感じている可能性が高いサインです。";
 
-    lovePower.innerText = "92%";
-　　loveBar.style.width = "92%";
+    lovePower.innerText = "86%";
+    loveBar.style.width = "86%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：86%";
-　　successBar.style.width = "86%";
+    "💘 恋愛成就確率：80%";
+    successBar.style.width = "80%";
 
     signalIndex.innerText =
-    "運命シグナル指数：90 / 100";
-　　signalBar.style.width = "90%";
+    "運命シグナル指数：83 / 100";
+    signalBar.style.width = "83%";
 
     finalJudge.innerText =
     "3回目のデートまで進めたことは、とても順調な流れです。今後は恋人関係へ発展する可能性も十分あります。";
@@ -13171,16 +13526,16 @@ else if(question.includes("手をつないだ") ||
     answer =
     "今の運命シグナルは『距離がかなり近づいた状態』です。手をつなげたことは、相手があなたに安心感や親しみを持っている可能性が高いサインです。";
 
-    lovePower.innerText = "90%";
-    loveBar.style.width = "90%";
+    lovePower.innerText = "84%";
+    loveBar.style.width = "84%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：82%";
-    successBar.style.width = "82%";
+    "💘 恋愛成就確率：77%";
+    successBar.style.width = "77%";
 
     signalIndex.innerText =
-    "運命シグナル指数：88 / 100";
-    signalBar.style.width = "88%";
+    "運命シグナル指数：81 / 100";
+    signalBar.style.width = "81%";
 
     finalJudge.innerText =
     "手をつなげたことは、二人の距離がかなり縮まっているサインです。焦らず自然な流れを大切にしましょう。";
@@ -13210,16 +13565,16 @@ else if(question.includes("ハグした") ||
     answer =
     "今の運命シグナルは『安心感と親密さが深まった状態』です。ハグは相手との距離がかなり近づいているサインですが、まだ焦らず自然な関係の流れを大切にしましょう。";
 
-    lovePower.innerText = "92%";
-    loveBar.style.width = "92%";
+    lovePower.innerText = "88%";
+    loveBar.style.width = "88%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：84%";
-    successBar.style.width = "84%";
+    "💘 恋愛成就確率：81%";
+    successBar.style.width = "81%";
 
     signalIndex.innerText =
-    "運命シグナル指数：90 / 100";
-    signalBar.style.width = "90%";
+    "運命シグナル指数：85 / 100";
+    signalBar.style.width = "85%";
 
     finalJudge.innerText =
     "ハグできたことは、相手があなたに安心感や親しみを持っている可能性が高いサインです。";
@@ -13246,16 +13601,17 @@ else if(question.includes("キスした") ||
     answer =
     "今の運命シグナルは『恋愛関係へ大きく進展した状態』です。キスはかなり強い好意のサインですが、大人の恋愛ではその後の言葉と態度も大切です。";
 
-    lovePower.innerText = "96%";
-    loveBar.style.width = "96%";
+    lovePower.innerText = "92%";
+    loveBar.style.width = "92%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：88%";
-    successBar.style.width = "88%";
+    "💘 恋愛成就確率：85%";
+　　successBar.style.width = "85%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：94 / 100";
-    signalBar.style.width = "94%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：89 / 100";
+　　signalBar.style.width = "89%";
+
 
     finalJudge.innerText =
     "キスできたことは、二人の関係がかなり進展している強いサインです。ただし、気持ちの確認も大切です。";
@@ -13283,16 +13639,16 @@ else if(question.includes("告白された") ||
     answer =
     "今の運命シグナルは『恋愛成就目前』です。相手から気持ちを伝えられたことは、非常に強い好意のサインです。";
 
-    lovePower.innerText = "98%";
-    loveBar.style.width = "98%";
+    lovePower.innerText = "94%";
+　　loveBar.style.width = "94%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：94%";
-    successBar.style.width = "94%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：88%";
+　　successBar.style.width = "88%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：97 / 100";
-    signalBar.style.width = "97%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：92 / 100";
+　　signalBar.style.width = "92%";
 
     finalJudge.innerText =
     "相手から告白されたなら、恋愛運は非常に高い状態です。ここからは自分の気持ちを丁寧に確認することが大切です。";
@@ -13361,16 +13717,16 @@ else if(question.includes("相手から連絡") ||
     answer =
     "今の運命シグナルは『相手からの関心あり』です。相手から連絡が来たことは、あなたを気にしている可能性がある前向きなサインです。";
 
-    lovePower.innerText = "86%";
-    loveBar.style.width = "86%";
+    lovePower.innerText = "76%";
+　　loveBar.style.width = "76%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：78%";
-    successBar.style.width = "78%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：68%";
+　　successBar.style.width = "68%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：84 / 100";
-    signalBar.style.width = "84%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：73 / 100";
+　　signalBar.style.width = "73%";
 
     finalJudge.innerText =
     "相手から連絡が来るのは、関係が自然に動き始めているサインです。落ち着いて良い流れを育てましょう。";
@@ -13469,16 +13825,16 @@ else if(question.includes("同棲している") ||
 
     level = "💖 シグナルレベル：★★★★★★";
 
-    lovePower.innerText = "95%";
-    loveBar.style.width = "95%";
+    lovePower.innerText = "90%";
+　　loveBar.style.width = "90%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：93%";
-    successBar.style.width = "93%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：87%";
+　　successBar.style.width = "87%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：94 / 100";
-    signalBar.style.width = "94%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：89 / 100";
+　　signalBar.style.width = "89%";
 
     finalJudge.innerText =
     "同棲は二人が日常生活を共有している重要な段階です。恋愛だけでなく生活面での相性も大切になります。";
@@ -13545,16 +13901,16 @@ else if(question.includes("返事待ち") ||
     answer =
     "今の運命シグナルは『相手が気持ちを整理している段階』です。すぐに結果が出なくても悲観する必要はありません。返事を急かさず、相手が落ち着いて答えを出せる時間を尊重することが大切です。";
 
-    lovePower.innerText = "72%";
-    loveBar.style.width = "72%";
+    lovePower.innerText = "64%";
+    loveBar.style.width = "64%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：62%";
-    successBar.style.width = "62%";
+    "💘 恋愛成就確率：54%";
+    successBar.style.width = "54%";
 
     signalIndex.innerText =
-    "運命シグナル指数：74 / 100";
-    signalBar.style.width = "74%";
+    "運命シグナル指数：60 / 100";
+    signalBar.style.width = "60%";
 
     currentStatus.innerText =
     "今は相手があなたの気持ちを真剣に受け止め、返事を考えている段階です。焦らず待つことが良い結果につながる可能性があります。";
@@ -13582,16 +13938,16 @@ else if(question.includes("告白した") ||
     answer =
     "今の運命シグナルは『返事待ちの大切な時間』です。勇気を出して気持ちを伝えたことで、二人の関係は大きく前進しました。ここからは相手が自分の気持ちを整理できる時間を尊重することが大切です。";
 
-    lovePower.innerText = "82%";
-    loveBar.style.width = "82%";
+    lovePower.innerText = "66%";
+　　loveBar.style.width = "66%";
 
-    successRate.innerText =
-    "💘 恋愛成就確率：78%";
-    successBar.style.width = "78%";
+　　successRate.innerText =
+　　"💘 恋愛成就確率：55%";
+　　successBar.style.width = "55%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：85 / 100";
-    signalBar.style.width = "85%";
+　　signalIndex.innerText =
+　　"運命シグナル指数：62 / 100";
+　　signalBar.style.width = "62%";
 
     currentStatus.innerText =
     "二人の関係は大きな分岐点にいます。相手は返事を考えている可能性があります。";
@@ -14709,11 +15065,11 @@ if(!isTalkCase && !isScenarioCase && !isPositive){
 }
 
 const loveRates = {
-    "片思い": "82%",
-    "告白": "74%",
-    "デート": "88%",
-    "恋人": "85%",
-    "復縁": "61%"
+    "片思い": "65%",
+    "告白": "62%",
+    "デート": "70%",
+    "恋人": "74%",
+    "復縁": "48%"
 };
 
 if(!isTalkCase && !isScenarioCase && !isPositive){
@@ -14722,63 +15078,62 @@ lovePower.innerText =
 loveRates[category];
 
 const barRates = {
-    "片思い": 82,
-    "告白": 74,
-    "デート": 88,
-    "恋人": 85,
-    "復縁": 61
+    "片思い": 65,
+    "告白": 62,
+    "デート": 70,
+    "恋人": 74,
+    "復縁": 48
 };
 
 loveBar.style.width =
 barRates[category] + "%";
 
 const successRates = {
-    "片思い": "💘 恋愛成就確率：78%",
-    "告白": "💘 恋愛成就確率：68%",
-    "デート": "💘 恋愛成就確率：85%",
-    "恋人": "💘 恋愛成就確率：90%",
-    "復縁": "💘 恋愛成就確率：52%"
+    "片思い": "💘 恋愛成就確率：58%",
+    "告白": "💘 恋愛成就確率：55%",
+    "デート": "💘 恋愛成就確率：64%",
+    "恋人": "💘 恋愛成就確率：75%",
+    "復縁": "💘 恋愛成就確率：40%"
 };
-
 
 successRate.innerText =
 successRates[category];
 
 const successBarRates = {
-    "片思い": 78,
-    "告白": 68,
-    "デート": 85,
-    "恋人": 90,
-    "復縁": 52
+    "片思い": 58,
+    "告白": 55,
+    "デート": 64,
+    "恋人": 75,
+    "復縁": 40
 };
 
 successBar.style.width =
 successBarRates[category] + "%";
 
-
 const signalIndexes = {
-    "片思い": "運命シグナル指数：86 / 100",
-    "告白": "運命シグナル指数：72 / 100",
-    "デート": "運命シグナル指数：90 / 100",
-    "恋人": "運命シグナル指数：84 / 100",
-    "復縁": "運命シグナル指数：63 / 100"
+    "片思い": "運命シグナル指数：64 / 100",
+    "告白": "運命シグナル指数：60 / 100",
+    "デート": "運命シグナル指数：68 / 100",
+    "恋人": "運命シグナル指数：72 / 100",
+    "復縁": "運命シグナル指数：46 / 100"
 };
 
 signalIndex.innerText =
 signalIndexes[category];
 
 const signalRates = {
-    "片思い": 86,
-    "告白": 72,
-    "デート": 90,
-    "恋人": 84,
-    "復縁": 63
+    "片思い": 64,
+    "告白": 60,
+    "デート": 68,
+    "恋人": 72,
+    "復縁": 46
 };
 
 signalBar.style.width =
 signalRates[category] + "%";
 
 }
+
 
 if(isPositive){
 
@@ -14794,13 +15149,13 @@ if(isPositive){
     finalJudge.innerText =
     "恋愛運は好調です。自信を持って行動するとさらに関係が深まるでしょう。";
 
-    lovePower.innerText = "95%";
-    loveBar.style.width = "95%";
+    lovePower.innerText = "78%";
+　　loveBar.style.width = "78%";
 
-    signalIndex.innerText =
-    "運命シグナル指数：92 / 100";
+　　signalIndex.innerText =
+　　"運命シグナル指数：75 / 100";
 
-    signalBar.style.width = "92%";
+　　signalBar.style.width = "75%";
 
     luckyAction.innerText =
     "相手への感謝や好意を素直に伝えてみましょう。";
@@ -15139,6 +15494,98 @@ const items = [
 dailyItem.innerText =
 "🎁 ラッキーアイテム：" +
 items[Math.floor(Math.random() * items.length)];
+
+
+// ===== 「誘いたい・行きたい」段階の数値が高すぎる場合の上限補正 =====
+const isInvitePlanning =
+    question.includes("誘いたい") ||
+    question.includes("誘おう") ||
+    question.includes("誘ってみたい") ||
+    question.includes("行きたい") ||
+    question.includes("行きませんか") ||
+    question.includes("行かない");
+
+if(isScenarioCase && isInvitePlanning){
+
+    const loveMatch = lovePower.innerText.match(/\d+/);
+    const successMatch = successRate.innerText.match(/\d+/);
+    const signalMatch = signalIndex.innerText.match(/\d+/);
+
+    if(loveMatch){
+        const cappedLove = Math.min(Number(loveMatch[0]), 74);
+        lovePower.innerText = cappedLove + "%";
+        loveBar.style.width = cappedLove + "%";
+    }
+
+    if(successMatch){
+        const cappedSuccess = Math.min(Number(successMatch[0]), 64);
+        successRate.innerText =
+        "💘 恋愛成就確率：" + cappedSuccess + "%";
+        successBar.style.width = cappedSuccess + "%";
+    }
+
+    if(signalMatch){
+        const cappedSignal = Math.min(Number(signalMatch[0]), 70);
+        signalIndex.innerText =
+        "運命シグナル指数：" + cappedSignal + " / 100";
+        signalBar.style.width = cappedSignal + "%";
+    }
+}
+
+
+// ===== 高すぎる中間シグナルの一括補正 =====
+const mediumSignalRules = [
+    {
+        words: ["毎日LINE", "毎日ライン", "毎日連絡", "よく連絡している"],
+        love: 76, success: 68, signal: 73
+    },
+    {
+        words: ["初デート後", "デート後", "デートの後", "初デートが終わった"],
+        love: 76, success: 68, signal: 73
+    },
+    {
+        words: ["2回目のデート", "二回目のデート", "次のデート", "二回目に誘われた"],
+        love: 78, success: 70, signal: 75
+    },
+    {
+        words: ["3回目のデート", "三回目のデート", "3回目に誘われた",
+                "三回目に誘われた", "3回目も会えた"],
+        love: 82, success: 75, signal: 79
+    },
+    {
+        words: ["友達以上恋人未満", "友達以上", "恋人未満", "いい感じ", "両思いっぽい"],
+        love: 80, success: 73, signal: 77
+    },
+    {
+        words: ["手をつないだ", "手を繋いだ", "手をつなぎました", "手を繋ぎました"],
+        love: 80, success: 73, signal: 77
+    },
+    {
+        words: ["元恋人から連絡が来た", "元彼から連絡が来た", "元カノから連絡が来た",
+                "元恋人からLINEが来た", "元彼からLINEが来た", "元カノからLINEが来た"],
+        love: 74, success: 66, signal: 72
+    }
+];
+
+for(const rule of mediumSignalRules){
+
+    if(rule.words.some(word => question.includes(word))){
+
+        lovePower.innerText = rule.love + "%";
+        loveBar.style.width = rule.love + "%";
+
+        successRate.innerText =
+        "💘 恋愛成就確率：" + rule.success + "%";
+        successBar.style.width = rule.success + "%";
+
+        signalIndex.innerText =
+        "運命シグナル指数：" + rule.signal + " / 100";
+        signalBar.style.width = rule.signal + "%";
+
+        break;
+    }
+}
+
 
 
 // ===== 相手との関係性による軽い補正 =====
