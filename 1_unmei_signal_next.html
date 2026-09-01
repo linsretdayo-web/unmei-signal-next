@@ -1422,8 +1422,26 @@ function showFavorites(){
     const favoriteTitle =
     document.getElementById("favoriteTitle");
 
+    const compareStatus =
+    document.getElementById("compareStatus");
+
+    if(compareStatus){
+    compareStatus.innerText =
+    "比較する診断を2件選んでください。";
+}
+
+    const compareResult =
+    document.getElementById("compareResult");
+
+    if(compareResult){
+       compareResult.style.display = "none";
+       compareResult.innerHTML = "";
+}
+
     let favorites =
     JSON.parse(localStorage.getItem("loveFavorites")) || [];
+
+    favorites = favorites.map((item, originalIndex) => ({...item, originalIndex}));
 
 const searchWord =
 document.getElementById("favoriteSearch") ?
@@ -1497,7 +1515,7 @@ cursor:pointer;
 <input
 type="checkbox"
 class="compareCheck"
-value="${index}"
+value="${item.originalIndex}"
 onchange="updateCompareStatus(this)"
 style="width:auto; margin-right:8px;"
 >
@@ -1518,7 +1536,7 @@ style="width:auto; margin-right:8px;"
 
         <br>
 
-        <button onclick="deleteFavorite(${index})">
+        <button onclick="deleteFavorite(${item.originalIndex})">
         🗑 このお気に入りを削除
         </button>
 
@@ -1608,19 +1626,7 @@ function compareFavorites(){
     let favorites =
     JSON.parse(localStorage.getItem("loveFavorites")) || [];
 
-    const searchWord =
-    document.getElementById("favoriteSearch") ?
-    document.getElementById("favoriteSearch").value.trim() :
-    "";
-
-    if(searchWord !== ""){
-        favorites = favorites.filter(item =>
-            item.date.includes(searchWord) ||
-            item.category.includes(searchWord) ||
-            item.question.includes(searchWord) ||
-            item.result.includes(searchWord)
-        );
-    }
+    
 
     const first =
     favorites[Number(selected[0].value)];
