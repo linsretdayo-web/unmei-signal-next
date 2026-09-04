@@ -3608,6 +3608,25 @@ document.getElementById("successBar");
 const signalBar =
 document.getElementById("signalBar");
 
+// ===== 前回の診断結果をリセット =====
+currentStatus.innerText = "";
+recommendAction.innerText = "";
+cautionPoint.innerText = "";
+finalJudge.innerText = "";
+lovePower.innerText = "";
+successRate.innerText = "";
+signalIndex.innerText = "";
+luckyAction.innerText = "";
+aiComment.innerText = "";
+partnerFeeling.innerText = "";
+bestTiming.innerText = "";
+chanceTiming.innerText = "";
+luckyColor.innerText = "";
+
+loveBar.style.width = "0%";
+successBar.style.width = "0%";
+signalBar.style.width = "0%";
+
 result.style.display="block";
 
 message.innerText="💖 心理分析中...";
@@ -3696,6 +3715,11 @@ const loveKeywords = [
 "恋",
 "告白",
 "喧嘩",
+"諦め",
+"あきらめ",
+"忘れられない",
+"片思い",
+"無理かも",
 "いちご狩り",
 "いちご狩りデート",
 "プラネタリウム",
@@ -8231,7 +8255,7 @@ else if(question.includes("遊園地に誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★☆";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『ワクワクした時間を共有しながら距離を縮めやすいタイミング』です。遊園地は自然と笑顔が増え、一緒に思い出を作りやすいデートスポットです。";
@@ -13767,7 +13791,7 @@ else if(question.includes("プロポーズされた") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★★";
+    level = "💖 シグナルレベル：★★★★★";
 
     answer =
     "今の運命シグナルは『人生の約束へ進む段階』です。プロポーズは、相手があなたとの未来を本気で考えている非常に強いサインです。";
@@ -13805,7 +13829,7 @@ else if(question.includes("婚約した") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★★";
+    level = "💖 シグナルレベル：★★★★★";
 
     lovePower.innerText = "99%";
     loveBar.style.width = "99%";
@@ -13840,7 +13864,7 @@ else if(question.includes("同棲している") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★★";
+    level = "💖 シグナルレベル：★★★★★";
 
     lovePower.innerText = "90%";
 　　loveBar.style.width = "90%";
@@ -13875,7 +13899,7 @@ else if(question.includes("結婚した") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★★";
+    level = "💖 シグナルレベル：★★★★★";
 
     lovePower.innerText = "100%";
     loveBar.style.width = "100%";
@@ -14320,7 +14344,7 @@ else if(question.includes("元恋人から連絡が来た") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★☆";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『再接近のチャンスが訪れている状態』です。相手もあなたを思い出している可能性があります。";
@@ -14658,10 +14682,10 @@ isPositive = false;
 isSuperPositive = false;
 isScenarioCase = true;
 
-level = "💖 シグナルレベル：★★★★☆☆";
+level = "💖 シグナルレベル：★★★☆☆";
 
 answer =
-"今の運命シグナルは『答えを急がず、自分の気持ちを整理する時期』です。長い片思いは苦しいものですが、今すぐ諦める必要があるとは限りません。相手との現状を冷静に見直してみましょう。";
+"今の運命シグナルは『答えを急がず、自分の気持ちを整理する時期』です。諦めようと思うほど悩んでいる時こそ、今すぐ結論を出す必要はありません。相手との現状や自分の気持ちを冷静に見直してみましょう。";
 
 lovePower.innerText = "66%";
 loveBar.style.width = "66%";
@@ -14675,10 +14699,10 @@ signalIndex.innerText =
 signalBar.style.width = "64%";
 
 finalJudge.innerText =
-"長い片思いだからといって可能性がゼロとは限りません。焦って結論を出さず、小さな変化にも目を向けることが大切です。";
+"諦めようと思うほど悩んでいる時でも、すぐに可能性がないと決める必要はありません。焦って結論を出さず、相手との現状や小さな変化にも目を向けることが大切です。";
 
 currentStatus.innerText =
-"気持ちはまだ残っていますが、少し疲れも見え始めています。一度心を整理すると前向きな判断がしやすくなるでしょう。";
+"諦めようか迷う気持ちがある一方で、まだ相手への思いも残っているようです。一度心を整理すると前向きな判断がしやすくなるでしょう。";
 
 recommendAction.innerText =
 "無理に忘れようとせず、自分の時間を充実させながら自然な接点を大切にしましょう。";
@@ -14977,12 +15001,12 @@ else if(!isScenarioCase){
     answer = messages[category];
 }
 
-if(isSuperPositive){
+if(isSuperPositive && !isScenarioCase){
     level = "💖 シグナルレベル：★★★★★";
     answer =
     "今の運命シグナルは『恋愛運最高潮』です。相手との関係が大きく前進する可能性があります。";
 }
-else if(isPositive){
+else if(isPositive && !isScenarioCase){
     level = "💖 シグナルレベル：★★★★☆";
     
     answer =
@@ -15673,6 +15697,37 @@ if(relationshipAdvice[relationship]){
     recommendAction.innerText +=
     "\n\n💞 関係性からのアドバイス：" +
     relationshipAdvice[relationship];
+}
+
+// ===== 個別シナリオで空欄になった結果を共通補完 =====
+if(!luckyAction.innerText.trim()){
+    luckyAction.innerText =
+    "🍀 相手の反応を見ながら、無理のない小さな一歩を意識してみましょう。";
+}
+
+if(!aiComment.innerText.trim()){
+    aiComment.innerText =
+    "今は結果を急ぐより、相手との自然なやり取りを大切にすることが恋愛を前進させるポイントです。";
+}
+
+if(!partnerFeeling.innerText.trim()){
+    partnerFeeling.innerText =
+    "相手の気持ちはまだ一つに決めつけられません。会話や連絡、今後の反応を合わせて見ていきましょう。";
+}
+
+if(!bestTiming.innerText.trim()){
+    bestTiming.innerText =
+    "相手が忙しくなく、落ち着いて話せるタイミングがおすすめです。";
+}
+
+if(!chanceTiming.innerText.trim()){
+    chanceTiming.innerText =
+    "📅 焦らず関係を続けることで、今後1〜2週間ほどの間に動きやすいタイミングが見えてきそうです。";
+}
+
+if(!luckyColor.innerText.trim()){
+    luckyColor.innerText =
+    "💗 ピンク：やわらかく親しみやすい雰囲気を引き出してくれるでしょう。";
 }
 
 
