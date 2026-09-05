@@ -4472,7 +4472,8 @@ const excludedPastKeywords = [
     "告白",
     "喧嘩",
     "電話",
-    "通話"
+    "通話",
+    "復縁"
 ];
 
 const matchedPastKeywords =
@@ -4483,12 +4484,20 @@ loveKeywords
 )
 .sort((a,b) => b.length - a.length);
 
+const isPastFirstDate =
+    question.includes("初デートしました") ||
+    (question.includes("初デートした") &&
+     !question.includes("初デートしたい"));
+
 const pastDateKeyword =
-matchedPastKeywords.find(keyword =>
-    pastActionWords.some(action =>
-        question.includes(keyword + action)
-    )
-) || null;
+isPastFirstDate
+    ? "初デート"
+    : matchedPastKeywords.find(keyword =>
+        pastActionWords.some(action =>
+            question.includes(keyword + action)
+        )
+    ) || null;
+
 
 const lightTroubleKeywords = [
     "不安",
@@ -4611,12 +4620,15 @@ for(let word of superPositiveKeywords){
 }
 
 if((question.includes("話") || question.includes("会話")) &&
+   !question.includes("電話") &&
+   !question.includes("通話") &&
    !question.includes("職場") &&
    !question.includes("会社") &&
    !question.includes("同僚") &&
    !question.includes("上司") &&
    !question.includes("先輩") &&
    !question.includes("後輩")){
+
 isTalkCase = true;
 
 level = "💖 シグナルレベル：★★★☆☆";
@@ -7579,6 +7591,49 @@ else if(question.includes("クリスマスデートに誘いたいです") ||
 
     cautionPoint.innerText =
     "返事を急かしたり、一度断られたからといって何度も誘うのは避けましょう。相手の予定や気持ちを尊重することが大切です。";
+}
+
+
+else if(
+    question.includes("電話しました") ||
+    question.includes("通話しました") ||
+    (question.includes("電話した") &&
+     !question.includes("電話したい")) ||
+    (question.includes("通話した") &&
+     !question.includes("通話したい"))
+){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💖 シグナルレベル：★★★★☆";
+
+    answer =
+    "今の運命シグナルは『会話を通じて距離が近づいた状態』です。実際に電話や通話ができたことは、二人の関係を深める前向きな材料です。";
+
+    lovePower.innerText = "78%";
+    loveBar.style.width = "78%";
+
+    successRate.innerText =
+    "💘 恋愛成就確率：69%";
+    successBar.style.width = "69%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：75 / 100";
+    signalBar.style.width = "75%";
+
+    finalJudge.innerText =
+    "電話で自然に会話が続いたなら、相手もあなたとのやり取りを負担に感じていない可能性があります。今後の反応も合わせて判断しましょう。";
+
+    currentStatus.innerText =
+    "実際に声で話せたことで、メッセージだけの関係から一歩進んだ段階です。";
+
+    recommendAction.innerText =
+    "電話のお礼や楽しかった気持ちを短く伝え、相手の反応が良ければ次の通話へ自然につなげましょう。";
+
+    cautionPoint.innerText =
+    "一度電話できただけで脈ありと決めつけず、会話の内容や相手からの連絡、その後の反応も合わせて見ましょう。";
 }
 
 
@@ -13707,8 +13762,10 @@ else if(question.includes("告白された") ||
 else if(question.includes("付き合うことになった") ||
         question.includes("付き合いました") ||
         question.includes("恋人になった") ||
-        question.includes("彼氏ができた") ||
-        question.includes("彼女ができた")){
+        (question.includes("彼氏ができた") &&
+ !question.includes("好きな人に彼氏ができた")) ||
+(question.includes("彼女ができた") &&
+ !question.includes("好きな人に彼女ができた"))){
 
     isPositive = false;
     isSuperPositive = false;
@@ -14040,44 +14097,6 @@ else if(question.includes("デートした") ||
 
 
 
-else if(question.includes("復縁したい") ||
-   question.includes("元彼と復縁したい") ||
-   question.includes("元カノと復縁したい") ||
-   question.includes("やり直したい")){
-
-    isPositive = false;
-    isSuperPositive = false;
-    isScenarioCase = true;
-
-    level = "💖 シグナルレベル：★★☆☆☆";
-
-    answer =
-    "今の運命シグナルは『関係を見つめ直す時期』です。復縁は可能性がありますが、まずは別れた原因と今の気持ちを冷静に整理することが大切です。";
-
-    lovePower.innerText = "55%";
-    loveBar.style.width = "55%";
-
-    successRate.innerText =
-    "💘 恋愛成就確率：45%";
-    successBar.style.width = "45%";
-
-    signalIndex.innerText =
-    "運命シグナル指数：50 / 100";
-    signalBar.style.width = "50%";
-
-    finalJudge.innerText =
-    "復縁は焦って動くより、原因の整理と相手の状況を見極めることが大切です。";
-
-    currentStatus.innerText =
-    "今は過去の関係を振り返り、同じ問題を繰り返さないための準備期間です。";
-
-    recommendAction.innerText =
-    "すぐに連絡するより、まずは自分の気持ち・改善点・相手に伝えたいことを整理しましょう。";
-
-    cautionPoint.innerText =
-    "寂しさだけで復縁を求めると、同じ問題を繰り返す可能性があります。相手の気持ちも尊重しましょう。";
-}
-
 
 
 else if(question.includes("遠距離") ||
@@ -14292,6 +14311,7 @@ else if(question.includes("好きな人に恋人がいる") ||
 
 
 else if(question.includes("好きな人に恋人ができた") ||
+        question.includes("好きな人に恋人ができました") ||
         question.includes("好きな人に彼氏ができた") ||
         question.includes("好きな人に彼女ができた") ||
         question.includes("好きな人に彼氏ができました") ||
@@ -14330,15 +14350,39 @@ else if(question.includes("好きな人に恋人ができた") ||
 
     cautionPoint.innerText =
     "嫉妬や焦りから無理に関係へ介入すると、相手との関係そのものを失う可能性があります。";
+
+    luckyAction.innerText =
+    "🍀 自分の気持ちを整理し、無理に相手との距離を縮めないようにしましょう。";
+
+    aiComment.innerText =
+    "今は相手の関係を尊重し、自分自身の心と生活を大切にすることが必要です。";
+
+    partnerFeeling.innerText =
+    "相手は現在の恋人との関係を優先している可能性が高いため、その意思を尊重しましょう。";
+
+    bestTiming.innerText =
+    "今は積極的に動く時期ではありません。気持ちが落ち着くまで距離を保ちましょう。";
+
+    chanceTiming.innerText =
+    "📅 新しい行動を急がず、まずは自分の気持ちが落ち着くまで時間を取りましょう。";
+
+    luckyColor.innerText =
+    "💙 ブルー：気持ちを落ち着かせ、冷静さを取り戻す助けになるでしょう。";
 }
 
 
 else if(question.includes("元恋人から連絡が来た") ||
         question.includes("元彼から連絡が来た") ||
         question.includes("元カノから連絡が来た") ||
+        question.includes("元恋人から連絡が来ました") ||
+        question.includes("元彼から連絡が来ました") ||
+        question.includes("元カノから連絡が来ました") ||
         question.includes("元恋人からLINEが来た") ||
         question.includes("元彼からLINEが来た") ||
-        question.includes("元カノからLINEが来た")){
+        question.includes("元カノからLINEが来た") ||
+        question.includes("元恋人からLINEが来ました") ||
+        question.includes("元彼からLINEが来ました") ||
+        question.includes("元カノからLINEが来ました")){
 
     isPositive = false;
     isSuperPositive = false;
@@ -14584,37 +14628,37 @@ else if(
     question.includes("やり直したい") ||
     question.includes("もう一度付き合いたい") ||
     question.includes("復縁できますか") ||
-    question.includes("元恋人")
+    question.includes("元恋人と復縁")
 ){
 
     isPositive = false;
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★☆☆";
+    level = "💖 シグナルレベル：★★☆☆☆";
 
     answer =
-    "今の運命シグナルは『時間を味方につける時期』です。復縁は焦るほど成功率が下がる傾向があります。まずは自分自身を整え、自然な再接触の機会を待ちましょう。";
+    "今の運命シグナルは『関係を冷静に見直す時期』です。復縁の可能性は、別れた原因や現在の連絡状況、相手の気持ちによって大きく変わります。まずは同じ問題を繰り返さないために、過去の関係を整理しましょう。";
 
-    lovePower.innerText = "68%";
-    loveBar.style.width = "68%";
+    lovePower.innerText = "55%";
+    loveBar.style.width = "55%";
 
     successRate.innerText =
-    "💘 恋愛成就確率：62%";
-    successBar.style.width = "62%";
+    "💘 恋愛成就確率：45%";
+    successBar.style.width = "45%";
 
     signalIndex.innerText =
-    "運命シグナル指数：66 / 100";
-    signalBar.style.width = "66%";
+    "運命シグナル指数：50 / 100";
+    signalBar.style.width = "50%";
 
     finalJudge.innerText =
-    "復縁は勢いよりタイミングが重要です。距離を置く期間が良い変化につながることもあります。";
+    "今の情報だけでは復縁できると断定できません。別れた原因が改善できるか、相手が自然なやり取りに応じてくれるかを見ながら判断することが大切です。";
 
     currentStatus.innerText =
-    "お互いの感情は完全には終わっていませんが、今は冷静さが必要な段階です。";
+    "現在は相手の気持ちや状況がまだ分からないため、復縁を急ぐよりも冷静に関係を見直す段階です。";
 
-    recommendation.innerText =
-    "すぐに連絡を増やすより、自分磨きをしながら自然な再接触を目指しましょう。";
+    recommendAction.innerText =
+    "別れた原因と改善できる点を整理したうえで、相手が連絡を拒んでいなければ、負担にならない短い連絡から反応を確かめましょう。";
 
     cautionPoint.innerText =
     "寂しさだけで連絡を繰り返すと、相手にプレッシャーを与える可能性があります。";
@@ -15602,10 +15646,15 @@ const mediumSignalRules = [
         love: 80, success: 73, signal: 77
     },
     {
-        words: ["元恋人から連絡が来た", "元彼から連絡が来た", "元カノから連絡が来た",
-                "元恋人からLINEが来た", "元彼からLINEが来た", "元カノからLINEが来た"],
-        love: 74, success: 66, signal: 72
-    }
+    words: [
+        "元恋人から連絡が来た", "元彼から連絡が来た", "元カノから連絡が来た",
+        "元恋人から連絡が来ました", "元彼から連絡が来ました", "元カノから連絡が来ました",
+        "元恋人からLINEが来た", "元彼からLINEが来た", "元カノからLINEが来た",
+        "元恋人からLINEが来ました", "元彼からLINEが来ました", "元カノからLINEが来ました"
+    ],
+    love: 74, success: 66, signal: 72
+}
+
 ];
 
 for(const rule of mediumSignalRules){
