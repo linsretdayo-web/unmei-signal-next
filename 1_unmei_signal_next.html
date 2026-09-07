@@ -4473,7 +4473,8 @@ const excludedPastKeywords = [
     "喧嘩",
     "電話",
     "通話",
-    "復縁"
+    "復縁",
+    "結婚"
 ];
 
 const matchedPastKeywords =
@@ -4494,8 +4495,9 @@ isPastFirstDate
     ? "初デート"
     : matchedPastKeywords.find(keyword =>
         pastActionWords.some(action =>
-            question.includes(keyword + action)
-        )
+    question.includes(keyword + action) &&
+    !question.includes(keyword + action + "い")
+)
     ) || null;
 
 
@@ -4708,7 +4710,10 @@ if(question.includes("デートに誘われた") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+        level = "💖 シグナルレベル：★★★★☆";
+
+    answer =
+    "今の運命シグナルは『相手から二人で会うきっかけが生まれた前向きな状態』です。デートに誘われたことは良いサインですが、恋愛感情が確定したとは限らないため、当日の反応やその後のやり取りも見ていきましょう。";
 
     lovePower.innerText = "76%";
     loveBar.style.width = "76%";
@@ -4719,10 +4724,18 @@ if(question.includes("デートに誘われた") ||
 
     signalIndex.innerText =
     "運命シグナル指数：73 / 100";
-    signalBar.style.width = "73%";
- 
+        signalBar.style.width = "73%";
 
-    finalJudge.innerText =
+    currentStatus.innerText =
+    "相手からデートに誘われ、二人で過ごす機会が生まれている前向きな状態です。";
+
+    recommendAction.innerText =
+    "誘ってくれたことへの嬉しさを自然に伝え、当日は会話と一緒に過ごす時間を楽しみましょう。";
+
+    cautionPoint.innerText =
+    "誘われただけで脈ありと決めつけず、デート中の態度やその後の連絡も合わせて判断しましょう.";
+
+     finalJudge.innerText =
     "相手から誘われたことは前向きなサインです。ただし、誘いだけで恋愛感情が確定するわけではないため、その後の反応も合わせて見ていきましょう。";
 }
 
@@ -4732,10 +4745,14 @@ if(question.includes("告白を断られた") ||
    question.includes("告白して振られた") ||
    question.includes("告白したけどダメだった")){
 
-    isPositive = false;
+       isPositive = false;
     isSuperPositive = false;
+    isScenarioCase = true;
 
     level = "💔 シグナルレベル：★☆☆☆☆";
+
+    answer =
+    "今の運命シグナルは『告白の結果を受け止め、気持ちを整理する時期』です。断られた直後は無理に関係を進めようとせず、自分の心を休ませることを優先しましょう。";
 
     lovePower.innerText = "25%";
     loveBar.style.width = "25%";
@@ -6623,7 +6640,7 @@ else if(question.includes("イルカと触れ合い体験に誘いたいです")
     isSuperPositive=false;
     isScenarioCase=true;
 
-    level="💖 シグナルレベル：★★★★★";
+    level="💖 シグナルレベル：★★★★☆";
 
     answer="今の運命シグナルは『特別な体験を共有することで、一気に思い出を増やしやすいタイミング』です。";
 
@@ -6721,7 +6738,7 @@ else if(question.includes("屋形船に誘いたいです") ||
     isSuperPositive=false;
     isScenarioCase=true;
 
-    level="💖 シグナルレベル：★★★★★";
+    level="💖 シグナルレベル：★★★★☆";
 
     answer="今の運命シグナルは『特別な景色を眺めながら、二人だけの時間を過ごしやすいタイミング』です。";
 
@@ -7352,7 +7369,8 @@ else if(question.includes("サバゲー体験に誘いたいです") ||
 }
 
 
-else if(question.includes("eスポーツカフェに誘いたいです") ||
+else if(!question.includes("ボードゲームカフェ") &&
+        (question.includes("eスポーツカフェに誘いたいです") ||
         question.includes("eスポーツカフェに誘いたい") ||
         question.includes("eスポーツカフェデートに誘いたいです") ||
         question.includes("eスポーツカフェデートに誘いたい") ||
@@ -7367,7 +7385,7 @@ else if(question.includes("eスポーツカフェに誘いたいです") ||
         question.includes("ゲームカフェに行きませんか") ||
         question.includes("ゲームカフェに行かない") ||
         question.includes("好きな人とeスポーツカフェに行きたいです") ||
-        question.includes("好きな人とeスポーツカフェに行きたい")){
+        question.includes("好きな人とeスポーツカフェに行きたい"))){
 
     isPositive = false;
     isSuperPositive = false;
@@ -7440,7 +7458,7 @@ else if(question.includes("ジップラインに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『スリルを共有することで、一気に距離が縮まりやすいタイミング』です。ジップライン体験は、ドキドキを共有できるため、お互いの笑顔や自然なリアクションが増えやすいデートになるでしょう。";
@@ -7564,7 +7582,7 @@ else if(question.includes("クリスマスデートに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『恋愛が大きく進展しやすいタイミング』です。クリスマスは恋愛イベントの中でも特別な日です。自然な誘い方を心がければ、二人の距離が一気に縮まる可能性があります。";
@@ -8505,7 +8523,7 @@ else if(question.includes("夜景に誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『恋愛ムードが高まりやすいタイミング』です。夜景デートは特別感があり、お互いの距離を自然に縮められるチャンスになります。";
@@ -8901,7 +8919,7 @@ else if(question.includes("イルミネーションに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『ロマンチックな雰囲気の中で距離を縮めやすいタイミング』です。イルミネーションは特別感があり、自然と恋愛ムードが高まりやすいデートです。";
@@ -9821,7 +9839,7 @@ else if(question.includes("キャンプデートに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『非日常を一緒に楽しむことで心の距離を縮めやすいタイミング』です。キャンプやグランピングは協力する場面も多く、お互いをより深く知るきっかけになるでしょう。";
@@ -9887,7 +9905,7 @@ else if (
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『夏の特別な思い出を作りやすいタイミング』です。花火大会デートは非日常感があり、自然と距離を縮めやすいでしょう。";
@@ -9999,7 +10017,11 @@ else if(question.includes("ライブデートに誘いたいです") ||
 }
 
 
-else if(question.includes("カフェに誘いたいです") ||
+else if(!question.includes("動物カフェ") &&
+        !question.includes("夜カフェ") &&
+        !question.includes("古民家カフェ") &&
+　　　　!question.includes("ボードゲームカフェ") &&
+        (question.includes("カフェに誘いたいです") ||
         question.includes("カフェに誘いたい") ||
         question.includes("好きな人をカフェに誘いたいです") ||
         question.includes("好きな人をカフェに誘いたい") ||
@@ -10011,7 +10033,7 @@ else if(question.includes("カフェに誘いたいです") ||
         question.includes("カフェに誘ってもいいですか") ||
         question.includes("カフェに誘っていい") ||
         question.includes("一緒にカフェに行きたいです") ||
-        question.includes("一緒にカフェに行きたい")){
+        question.includes("一緒にカフェに行きたい"))){
 
     isPositive = false;
     isSuperPositive = false;
@@ -10126,7 +10148,7 @@ else if(question.includes("花火大会に誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『特別なイベントをきっかけに距離を縮めやすいタイミング』です。花火大会や夏祭りは、普段よりも恋愛ムードが高まりやすく、自然に二人の距離を近づけるチャンスになります。";
@@ -10959,7 +10981,7 @@ else if(question.includes("ロープウェイデートに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『二人だけの特別な時間を過ごせるタイミング』です。ロープウェイでは景色を眺めながら自然と会話が生まれ、恋愛運が高まりやすいでしょう。";
@@ -11008,7 +11030,7 @@ else if(question.includes("クルージングデートに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『ロマンチックな雰囲気に包まれるタイミング』です。クルージングでは非日常の空間が二人の距離を縮めてくれるでしょう。";
@@ -11058,7 +11080,7 @@ else if(question.includes("展望台デートに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『恋愛ムードが高まりやすいタイミング』です。展望台では景色を眺めながら自然と距離が縮まり、心が通じ合いやすいでしょう。";
@@ -11111,7 +11133,7 @@ else if(question.includes("観覧車に誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『二人きりの時間で恋愛ムードが高まりやすいタイミング』です。観覧車では景色を眺めながら落ち着いて話せるため、普段より素直な気持ちを伝えやすいでしょう。";
@@ -11367,7 +11389,7 @@ else if(question.includes("バーに誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+   level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『落ち着いた大人の雰囲気で心の距離を縮めやすいタイミング』です。バーやワインバーでは普段より深い会話ができ、お互いを理解するきっかけになるでしょう。";
@@ -11542,7 +11564,7 @@ else if(question.includes("バラ園に誘いたいです") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
 
     answer =
     "今の運命シグナルは『華やかな景色の中で恋愛ムードが高まりやすいタイミング』です。バラ園では美しい花々を眺めながら、穏やかな時間を共有できるでしょう。";
@@ -13354,10 +13376,13 @@ else if(question.includes("毎日LINE") ||
 }
 
 
-else if(question.includes("初デート") ||
-        question.includes("初めてのデート") ||
-        question.includes("初デート前") ||
-        question.includes("初デートが不安")){
+else if(
+    (question.includes("初デート") ||
+     question.includes("初めてのデート")) &&
+    !question.includes("デート後") &&
+    !question.includes("デートの後") &&
+    !question.includes("初デートが終わった")
+){
 
     isPositive = false;
     isSuperPositive = false;
@@ -13456,7 +13481,7 @@ else if(question.includes("2回目のデート") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    
 
     answer =
     "今の運命シグナルは『関係が一歩前進する時期』です。2回目のデートは、お互いにもっと知りたいと思っている可能性が高いサインです。";
@@ -13496,7 +13521,8 @@ else if(question.includes("3回目のデート") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+    level = "💖 シグナルレベル：★★★★☆";
+
 
     answer =
     "今の運命シグナルは『恋愛関係へ大きく近づく時期』です。3回目のデートまで続いていることは、お互いに一緒にいる時間を心地良いと感じている可能性が高いサインです。";
@@ -13886,7 +13912,10 @@ else if(question.includes("婚約した") ||
     isSuperPositive = false;
     isScenarioCase = true;
 
-    level = "💖 シグナルレベル：★★★★★";
+        level = "💖 シグナルレベル：★★★★★";
+
+    answer =
+    "今の運命シグナルは『二人の関係が、将来を約束する特別な段階まで進んでいる状態』です。婚約は、お互いが人生を共に歩む意思を形にした非常に強いシグナルです。";
 
     lovePower.innerText = "99%";
     loveBar.style.width = "99%";
@@ -13923,6 +13952,10 @@ else if(question.includes("同棲している") ||
 
     level = "💖 シグナルレベル：★★★★★";
 
+        answer =
+    "今の運命シグナルは『二人が日常生活を共にし、恋愛からさらに深い関係へ進んでいる状態』です。同棲は、生活を共有しながら将来の相性を確かめる重要な段階です。";
+
+
     lovePower.innerText = "90%";
 　　loveBar.style.width = "90%";
 
@@ -13958,6 +13991,10 @@ else if(question.includes("結婚した") ||
 
     level = "💖 シグナルレベル：★★★★★";
 
+　　    answer =
+    "今の運命シグナルは『二人が恋愛を実らせ、人生を共に歩むパートナーになった最高段階』です。結婚は、二人の関係が大きな節目を迎えた非常に強いシグナルです。";
+
+
     lovePower.innerText = "100%";
     loveBar.style.width = "100%";
 
@@ -13983,12 +14020,19 @@ else if(question.includes("結婚した") ||
 }
 
 
-else if(question.includes("返事待ち") ||
-        question.includes("返事を待って") ||
-        question.includes("考えさせて") ||
-        question.includes("少し考えたい") ||
-        question.includes("返事は後で") ||
-        question.includes("保留された")){
+else if(
+    (question.includes("返事待ち") ||
+     question.includes("返事を待って") ||
+     question.includes("考えさせて") ||
+     question.includes("少し考えたい") ||
+     question.includes("返事は後で") ||
+     question.includes("保留された")) &&
+    !question.includes("告白の返事待ち") &&
+!question.includes("告白して返事待ち") &&
+!question.includes("告白したけど返事がない") &&
+!question.includes("告白したけど返事待ち") &&
+!question.includes("告白の返事がまだない")
+){
 
     isPositive = false;
     isSuperPositive = false;
@@ -14024,8 +14068,12 @@ else if(question.includes("返事待ち") ||
 }
 
 
-else if(question.includes("告白した") ||
-        question.includes("告白しました")){
+else if(
+    (question.includes("告白した") ||
+     question.includes("告白しました")) &&
+    !question.includes("告白したけど返事がない") &&
+    !question.includes("告白したけど返事待ち")
+){
 
     isPositive = false;
     isSuperPositive = false;
@@ -14061,15 +14109,20 @@ else if(question.includes("告白した") ||
 }
 
 
-else if(question.includes("デートした") ||
+else if((question.includes("デートした") &&
+         !question.includes("デートしたい")) ||
    question.includes("デートしました") ||
    question.includes("二人で遊んだ") ||
    question.includes("二人で出かけた")){
 
-    isPositive = false;
+        isPositive = false;
     isSuperPositive = false;
+    isScenarioCase = true;
 
     level = "💖 シグナルレベル：★★★★☆";
+
+    answer =
+    "今の運命シグナルは『二人で楽しい時間を共有し、関係が前向きに進んでいる状態』です。一緒に遊んだり出かけたりできたことは、相手との距離を縮める大切な一歩です。";
 
     lovePower.innerText = "86%";
     loveBar.style.width = "86%";
@@ -15012,7 +15065,8 @@ else if(question.includes("嫉妬してしまう") ||
 
 
 
-else if(question.includes("デート")){
+else if(question.includes("デート") && !isScenarioCase){
+
 level = "💖 シグナルレベル：★★★★☆";
     answer =
     "今の運命シグナルは『誘い方がカギ』です。重く誘うより、短時間で気軽に行ける場所を提案すると成功しやすいです。";
@@ -15383,9 +15437,10 @@ lightActions[Math.floor(Math.random() * lightActions.length)];
     "近いうちに相手との距離が縮まる可能性があります。"
 ];
 
-chanceTiming.innerText =
-chanceMessages[Math.floor(Math.random() * chanceMessages.length)];
-
+if(!chanceTiming.innerText.trim()){
+    chanceTiming.innerText =
+    chanceMessages[Math.floor(Math.random() * chanceMessages.length)];
+}
 
 if(isSuperPositive){
 
