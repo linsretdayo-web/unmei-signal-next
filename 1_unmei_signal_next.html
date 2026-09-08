@@ -3666,6 +3666,42 @@ document.getElementById("question").value;
 
 let question = originalQuestion;
 
+const isReconciledAlready =
+    question.includes("復縁しました") ||
+    (question.includes("復縁した") &&
+     !question.includes("復縁したい")) ||
+    question.includes("よりを戻しました") ||
+    question.includes("よりを戻した") ||
+    question.includes("ヨリを戻しました") ||
+    question.includes("ヨリを戻した") ||
+    question.includes("もう一度付き合うことになりました") ||
+    question.includes("もう一度付き合うことになった") ||
+    question.includes("やり直すことになりました") ||
+    question.includes("やり直すことになった");
+
+
+const isConfessionRejectedWithContact =
+    (question.includes("告白を断られ") ||
+     question.includes("告白が失敗") ||
+     question.includes("告白して振られ") ||
+     question.includes("好きな人に振られ")) &&
+    (question.includes("毎日LINE") ||
+     question.includes("毎日ライン") ||
+     question.includes("毎日連絡") ||
+     question.includes("その後も連絡") ||
+     question.includes("相手から連絡"));
+
+const isConfirmedCheating =
+    question.includes("浮気された") ||
+    question.includes("浮気されました") ||
+    question.includes("浮気されて") ||
+    question.includes("浮気していたことが分かった") ||
+    question.includes("浮気していたことがわかった") ||
+    question.includes("浮気が発覚") ||
+    question.includes("浮気を認めた") ||
+    question.includes("浮気を認めました");
+
+
 /* 「好きな人を○○に誘いたい」を既存シナリオに一括対応 */
 const naturalInviteMatch =
 originalQuestion.match(/好きな人を(.+?)に誘いたい(?:です)?/);
@@ -4493,13 +4529,32 @@ const isPastFirstDate =
 const pastDateKeyword =
 isPastFirstDate
     ? "初デート"
-    : matchedPastKeywords.find(keyword =>
-        pastActionWords.some(action =>
-    question.includes(keyword + action) &&
-    !question.includes(keyword + action + "い")
-)
-    ) || null;
+    : matchedPastKeywords.find(keyword => {
 
+        const keywordPosition =
+        question.indexOf(keyword);
+
+        const nearbyText =
+        question.slice(
+            keywordPosition,
+            keywordPosition + 50
+        );
+
+        const hasFutureExpression =
+            nearbyText.includes("行きたい") ||
+            nearbyText.includes("誘いたい") ||
+            nearbyText.includes("したい") ||
+            nearbyText.includes("見に行きたい") ||
+            nearbyText.includes("行く予定") ||
+            nearbyText.includes("行こうと思");
+
+        return (
+            !hasFutureExpression &&
+            pastActionWords.some(action =>
+                nearbyText.includes(action)
+            )
+        );
+    }) || null;
 
 const lightTroubleKeywords = [
     "不安",
@@ -4834,8 +4889,12 @@ if(pastDateKeyword){
 
 
 
-else if(isTalkCase && !isScenarioCase){
-
+else if(
+    isTalkCase &&
+    !isScenarioCase &&
+    !question.includes("行きたい") &&
+    !question.includes("誘いたい")
+){
     currentStatus.innerText =
     "相手との会話ができたことで、関係は少しずつ前進している状態です。";
 
@@ -10430,6 +10489,8 @@ else if(question.includes("ガラス温室に誘いたいです") ||
 }
 
 else if(question.includes("動物カフェに誘いたいです") ||
+        question.includes("動物カフェに行きたい") ||
+        question.includes("動物カフェへ行きたい") ||
         question.includes("動物カフェに誘いたい") ||
         question.includes("猫カフェに誘いたいです") ||
         question.includes("猫カフェに誘いたい") ||
@@ -13336,6 +13397,59 @@ else if(question.includes("告白したい") ||
     "告白の可能性はあります。ただし今は勢いよりタイミング重視です。相手が安心して返事を考えられる状況を作ることが成功率を上げるポイントです。";
 }
 
+else if(isConfessionRejectedWithContact){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💖 シグナルレベル：★★☆☆☆";
+
+    answer =
+    "今の運命シグナルは『告白の返事を尊重しながら、現在の関係を慎重に見守る段階』です。告白を断られた事実は受け止める必要がありますが、その後も相手から毎日連絡が続いていることは、あなたとの関係を大切にしているサインと考えられます。";
+
+    lovePower.innerText = "50%";
+    loveBar.style.width = "50%";
+
+    successRate.innerText =
+    "💘 恋愛成就確率：35%";
+    successBar.style.width = "35%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：42 / 100";
+    signalBar.style.width = "42%";
+
+    currentStatus.innerText =
+    "恋愛としては一度断られていますが、会話や連絡を続けられる関係は保たれています。";
+
+    recommendAction.innerText =
+    "すぐに再告白せず、相手からの連絡には自然に応じながら、安心して話せる関係を大切にしましょう。";
+
+    cautionPoint.innerText =
+    "毎日連絡が来ることだけで、相手の気持ちが恋愛へ変わったと決めつけないようにしましょう。";
+
+    finalJudge.innerText =
+    "告白を断られた事実があるため、現時点で脈ありとは断定できません。ただし、関係を切らずに連絡を続けていることから、相手があなたを大切な存在と考えている可能性はあります。";
+
+    luckyAction.innerText =
+    "🍀 相手からの連絡に自然なペースで返信し、恋愛の答えを急がないようにしましょう。";
+
+    aiComment.innerText =
+    "連絡が続いていても、今は再告白を急がず、相手が安心できる距離感を守ることが大切です。";
+
+    partnerFeeling.innerText =
+    "相手は恋愛としては断ったものの、あなたとの関係や会話は続けたいと考えている可能性があります。";
+
+    bestTiming.innerText =
+    "当面は恋愛の結論を求めず、相手から自然に連絡が続く間は普段どおり接しましょう。";
+
+    chanceTiming.innerText =
+    "📅 少なくとも数週間は再告白を控え、相手の態度が継続的に変化するかを見守りましょう。";
+
+    luckyColor.innerText =
+    "💚 グリーン：焦りを抑え、自然で落ち着いた関係を保つ助けになるでしょう。";
+}
+
 
 else if(question.includes("毎日LINE") ||
    question.includes("毎日ライン") ||
@@ -14675,6 +14789,121 @@ else if(question.includes("好き避け") ||
 }
 
 else if(
+    (question.includes("復縁したい") ||
+     question.includes("復縁を申し込") ||
+     question.includes("やり直したい") ||
+     question.includes("もう一度付き合いたい")) &&
+    (question.includes("断られ") ||
+     question.includes("拒否され") ||
+     question.includes("無理と言われ") ||
+     question.includes("できないと言われ"))
+){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💔 シグナルレベル：★☆☆☆☆";
+
+    answer =
+    "今の運命シグナルは『相手の返事を受け止め、距離を置く必要がある段階』です。復縁を断られた場合は、すぐに説得し直さず、相手の意思を尊重することが大切です。";
+
+    lovePower.innerText = "30%";
+    loveBar.style.width = "30%";
+
+    successRate.innerText =
+    "💘 恋愛成就確率：20%";
+    successBar.style.width = "20%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：25 / 100";
+    signalBar.style.width = "25%";
+
+    currentStatus.innerText =
+    "相手は現時点では復縁を望んでいない意思を示している状態です。";
+
+    recommendAction.innerText =
+    "相手への連絡や説得はいったん控え、自分の気持ちと別れた原因を整理する時間を取りましょう。";
+
+    cautionPoint.innerText =
+    "何度も連絡して返事を変えてもらおうとすると、相手に強い負担を与える可能性があります。";
+
+    finalJudge.innerText =
+    "今は復縁を進める時期ではありません。相手の返事を尊重し、自分自身の生活と心の回復を優先しましょう。";
+
+        luckyAction.innerText =
+    "🍀 相手へ連絡する代わりに、自分の気持ちを紙やメモに書いて整理してみましょう。";
+
+    aiComment.innerText =
+    "断られた直後に答えを変えようとするより、相手の意思を尊重することが今できる最も大切な行動です。";
+
+    partnerFeeling.innerText =
+    "相手は現在、復縁することに前向きではない意思を示しています。その返事を尊重しましょう。";
+
+    bestTiming.innerText =
+    "今は再び連絡する時期ではありません。まずは十分に距離と時間を置きましょう。";
+
+    chanceTiming.innerText =
+    "📅 しばらくは復縁を急がず、自分の心と生活を整える期間にしましょう。";
+
+    luckyColor.innerText =
+    "💙 ブルー：気持ちを落ち着かせ、冷静さを取り戻す助けになるでしょう。";
+}
+
+else if(isReconciledAlready){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💖 シグナルレベル：★★★★☆";
+
+    answer =
+    "今の運命シグナルは『二人がもう一度関係を築き始めた、とても大切な段階』です。復縁できたことは大きな前進ですが、以前と同じ問題を繰り返さないよう、焦らず新しい関係を育てることが大切です。";
+
+    lovePower.innerText = "88%";
+    loveBar.style.width = "88%";
+
+    successRate.innerText =
+    "💘 恋愛成就確率：84%";
+    successBar.style.width = "84%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：86 / 100";
+    signalBar.style.width = "86%";
+
+    currentStatus.innerText =
+    "二人は過去の別れを乗り越え、もう一度恋人として歩き始めた状態です。";
+
+    recommendAction.innerText =
+    "復縁できたことに安心しすぎず、以前の別れにつながった原因を二人で見直し、無理のないペースで信頼を築き直しましょう。";
+
+    cautionPoint.innerText =
+    "過去の問題をなかったことにしたり、復縁前の不満を繰り返し持ち出したりすると、関係が再び不安定になる可能性があります。";
+
+    finalJudge.innerText =
+    "復縁はゴールではなく、新しい関係の始まりです。お互いの変化を認めながら丁寧に関係を育てることで、以前より安定した二人になれるでしょう。";
+
+    luckyAction.innerText =
+    "🍀 復縁できたことへの感謝と、これから大切にしたいことを穏やかに伝えてみましょう。";
+
+    aiComment.innerText =
+    "一度離れた二人が再び選び合えたことは、大きな意味を持つ出来事です。過去ではなく、これからの二人に目を向けましょう。";
+
+    partnerFeeling.innerText =
+    "相手も、もう一度あなたとの関係を大切に育てたいと考えている可能性が高いでしょう。";
+
+    bestTiming.innerText =
+    "復縁直後は結論を急がず、日常の穏やかなやり取りを積み重ねる時期です。";
+
+    chanceTiming.innerText =
+    "📅 今後1〜2週間は、二人の新しい約束や関係のルールを自然に話し合いやすい時期です。";
+
+    luckyColor.innerText =
+    "💗 ローズピンク：愛情と信頼をもう一度育てる気持ちを後押ししてくれるでしょう。";
+}
+
+else if(
     question.includes("復縁したい") ||
     question.includes("元彼と復縁") ||
     question.includes("元カノと復縁") ||
@@ -14806,7 +15035,62 @@ recommendAction.innerText =
 
 cautionPoint.innerText =
 "寂しさだけで諦めたり、勢いで告白したりすると後悔する可能性があります。";
+
 }
+
+else if(isConfirmedCheating){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💔 シグナルレベル：★☆☆☆☆";
+
+    answer =
+    "今の運命シグナルは『信頼関係が大きく損なわれ、今後の関係を見直す必要がある段階』です。浮気が事実として確認できている場合は、単なる疑いとして扱わず、自分の気持ちと安全を優先して今後を考えることが大切です。";
+
+    lovePower.innerText = "30%";
+    loveBar.style.width = "30%";
+
+    successRate.innerText =
+    "💘 恋愛継続確率：20%";
+    successBar.style.width = "20%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：25 / 100";
+    signalBar.style.width = "25%";
+
+    currentStatus.innerText =
+    "相手の浮気によって、二人の信頼関係が大きく揺らいでいる状態です。";
+
+    recommendAction.innerText =
+    "別れたい気持ちが固まっているなら、無理に関係を続ける必要はありません。感情的なやり取りを避け、落ち着いて自分の意思を伝えましょう。";
+
+    cautionPoint.innerText =
+    "相手に責任を転嫁されたり、強く引き止められたりしても、自分だけを責めないようにしてください。";
+
+    finalJudge.innerText =
+    "浮気が事実であり、関係を続けることがつらいなら、別れる選択も正当です。自分が安心して過ごせることを最優先に考えましょう。";
+
+    luckyAction.innerText =
+    "🍀 今の気持ちと今後望むことを、落ち着いて紙やメモに整理してみましょう。";
+
+    aiComment.innerText =
+    "傷ついた状態で無理に結論を急ぐ必要はありませんが、自分の気持ちを我慢して関係を続ける必要もありません。";
+
+    partnerFeeling.innerText =
+    "相手の気持ちよりも、まずは浮気によって傷ついたあなた自身の気持ちを大切にすべき状況です。";
+
+    bestTiming.innerText =
+    "安全に落ち着いて話せる時間と場所を選び、必要なら信頼できる人にも相談してから行動しましょう。";
+
+    chanceTiming.innerText =
+    "📅 今は恋愛の進展より、自分の気持ちと今後の生活を整えることを優先する時期です。";
+
+    luckyColor.innerText =
+    "🤍 ホワイト：気持ちを整理し、新しい判断へ進む冷静さを支えてくれるでしょう。";
+}
+
 
 else if(question.includes("浮気") ||
         question.includes("浮気された") ||
@@ -15714,7 +15998,10 @@ const mediumSignalRules = [
 
 for(const rule of mediumSignalRules){
 
-    if(rule.words.some(word => question.includes(word))){
+    if(
+    !isConfessionRejectedWithContact &&
+    rule.words.some(word => question.includes(word))
+){
 
         lovePower.innerText = rule.love + "%";
         loveBar.style.width = rule.love + "%";
@@ -15749,8 +16036,12 @@ const relationshipAdvice = {
     friend: "すでに友達としての関係があるので、今の自然な雰囲気を大切にしながら少しずつ特別感を出してみましょう。",
     schoolWork: "職場や学校で今後も顔を合わせる関係なので、急ぎすぎず相手の反応を見ながら距離を縮めるのがおすすめです。",
     dating: "すでに何度か二人で会えているため、相手との距離は比較的縮まっていると考えられます。次の一歩を意識してもよいでしょう。",
-    lover: "すでに恋人関係なので、進展を急ぐよりも相手への感謝や思いやりを大切にして関係を深めていきましょう。",
-    ex: "元恋人との関係では過去の経緯も大切です。焦って元の関係に戻そうとせず、現在の相手の気持ちを尊重しましょう。"
+    lover: isConfirmedCheating
+    ? "浮気が確認できている場合は、無理に関係修復を目指さず、自分の気持ちと今後の生活を優先して判断しましょう。"
+    : "すでに恋人関係なので、進展を急ぐよりも相手への感謝や思いやりを大切にして関係を深めていきましょう。",
+    ex: isReconciledAlready
+    ? "復縁後は以前の関係へそのまま戻るのではなく、お互いの変化を認めながら新しい信頼関係を築いていきましょう。"
+    : "元恋人との関係では過去の経緯も大切です。焦って元の関係に戻そうとせず、現在の相手の気持ちを尊重しましょう。"
 };
 
 const adjust = relationshipAdjust[relationship] || 0;
