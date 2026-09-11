@@ -1246,6 +1246,19 @@ line-height:1.8;
 
 <script>
 
+
+// ===== 履歴・お気に入り・比較表示用のHTML安全化 =====
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
 function saveHistory(category, relationship, question, result){
 
     let histories =
@@ -1326,7 +1339,7 @@ relationshipNames[item.relationship] || "未設定";
             <b>💞 相手との関係性：</b>${relationshipText}<br><br>
 
             <b>相談内容</b><br>
-            ${item.question}<br><br>
+            ${escapeHTML(item.question)}<br><br>
 
             <b>解析結果</b><br>
             <div style="
@@ -1534,7 +1547,7 @@ style="width:auto; margin-right:8px;"
 </label>
 
         <b>相談内容</b><br>
-        ${item.question}<br><br>
+        ${escapeHTML(item.question)}<br><br>
 
         <b>解析結果</b><br>
         <div style="
@@ -1710,14 +1723,14 @@ function compareFavorites(){
         <h3>📊 診断比較結果</h3>
 
         <b>① ${first.category}</b><br>
-        ${first.question}<br><br>
+        ${escapeHTML(first.question)}<br><br>
 
         💖 恋愛運ゲージ：${firstLove}%<br>
         💘 恋愛成就確率：${firstSuccess}%<br>
         🔮 運命シグナル指数：${firstSignal}<br><br>
 
         <b>② ${second.category}</b><br>
-        ${second.question}<br><br>
+        ${escapeHTML(second.question)}<br><br>
 
         💖 恋愛運ゲージ：${secondLove}%<br>
         💘 恋愛成就確率：${secondSuccess}%<br>
@@ -1872,6 +1885,15 @@ question = question
     .replace(/\s+/g, " ")
     .trim();
 
+// ===== 脈あり診断：否定・推測前の文章を履歴用に保持 =====
+const interestOriginalQuestion = question;
+
+// ===== 告白・好意表明の否定や推測を確定扱いしない =====
+question = question.replace(
+    /(告白された|好きと言われた|好きって言われた|付き合ってと言われた|付き合ってほしいと言われた|付き合いたいと言われた|恋人になってほしいと言われた)(?:という)?(?:わけではない|わけではありません|わけじゃない|とは限らない|とは限りません|かもしれない|かもしれません|可能性がある|可能性があります|と思う|と思います|と思っている|と思っています)/g,
+    "明確な好意表明は確認できていない"
+);
+
     const relationship =
     document.getElementById("relationship").value;
 
@@ -1985,6 +2007,10 @@ if(confessionMatched){
     ============================== */
 
     const strongPositiveWords = [
+        "次の約束ができた",
+        "次の約束ができました",
+        "次の約束もできた",
+        "次の約束もできました",
         "好きと言われた",
         "好きって言われた",
         "相手から好きと言われた",
@@ -2039,6 +2065,12 @@ if(confessionMatched){
     ============================== */
 
     const positiveWords = [
+        "初デートをした",
+        "初デートをしました",
+        "初デートをして",
+        "初デートに行った",
+        "初デートに行きました",
+        "初デートに行って",
         "よく目が合う",
         "何度も目が合う",
         "目が合う",
@@ -2103,7 +2135,6 @@ if(confessionMatched){
         "趣味を聞かれた",
         "誕生日を聞かれた",
         "プライベートなことを聞かれた",
-                "プライベートなことを聞かれた",
         "二人で会った",
         "二人で会いました",
         "二人きりで会った",
@@ -2204,6 +2235,13 @@ const weakNegativeWords = [
     ============================== */
 
     const strongNegativeWords = [
+
+                "好きな人に恋人ができた",
+        "好きな人に恋人ができました",
+        "好きな人に彼氏ができた",
+        "好きな人に彼氏ができました",
+        "好きな人に彼女ができた",
+        "好きな人に彼女ができました",
         "嫌いと言われた",
         "好きじゃないと言われた",
         "好きではないと言われた",
@@ -2222,8 +2260,6 @@ const weakNegativeWords = [
         "友達としてしか見れない",
         "他に好きな人がいる",
         "好きな人がいると言われた",
-        "彼氏がいる",
-        "彼女がいる",
         "彼氏がいる",
         "彼女がいる",
         "断られることが多い",
@@ -3103,7 +3139,7 @@ else if(negativeCount > 0){
 else{
 
     signText =
-    "💡 好意・非好意どちらのサインも決め手が少ない状態です.";
+    "💡 好意・非好意どちらのサインも決め手が少ない状態です。";
 
 }
   
@@ -3187,7 +3223,7 @@ else{
     `;
 
     saveInterestHistory(
-    question,
+    interestOriginalQuestion,
     relationship,
     score,
     level,
@@ -3297,7 +3333,7 @@ function showInterestHistory(){
             <b>💞 相手との関係性：</b>${relationshipText}<br><br>
 
             <b>相談内容</b><br>
-            ${item.question}<br><br>
+            ${escapeHTML(item.question)}<br><br>
 
             <b>💘 脈あり度：${item.score}%</b><br>
             ${item.level}<br><br>
@@ -3497,7 +3533,7 @@ function showInterestFavorites(){
             <b>💞 相手との関係性：</b>${relationshipText}<br><br>
 
             <b>相談内容</b><br>
-            ${item.question}<br><br>
+            ${escapeHTML(item.question)}<br><br>
 
             <b>💘 脈あり度：${item.score}%</b><br>
             ${item.level}<br><br>
@@ -3666,6 +3702,105 @@ document.getElementById("question").value;
 
 let question = originalQuestion;
 
+// ===== 希望・未来表現を完了した出来事として扱わない =====
+question = question
+    .replace(
+        /キス(?:を)?した(?:い|かった|くない|くはない|くありません|くはありません|くなかった)/g,
+        "キスを希望している"
+    )
+    .replace(
+        /キス(?:を)?する(?:予定|つもり)/g,
+        "キスを予定している"
+    )
+    .replace(
+        /キス(?:を)?しようと思/g,
+        "キスを考えている"
+    )
+    .replace(
+        /結婚した(?:い|かった|くない|くはない|くありません|くはありません|くなかった)/g,
+        "結婚を希望している"
+    )
+    .replace(
+        /結婚する(?:予定|つもり)/g,
+        "結婚を予定している"
+    )
+    .replace(
+        /結婚しようと思/g,
+        "結婚を考えている"
+    )
+    .replace(
+        /入籍した(?:い|かった|くない|くはない|くありません|くはありません|くなかった)/g,
+        "入籍を希望している"
+    )
+    .replace(
+        /入籍する(?:予定|つもり)/g,
+        "入籍を予定している"
+    )
+    .replace(
+        /入籍しようと思/g,
+        "入籍を考えている"
+    )
+    .replace(
+        /婚約した(?:い|かった|くない|くはない|くありません|くはありません|くなかった)/g,
+        "婚約を希望している"
+    )
+    .replace(
+        /婚約する(?:予定|つもり)/g,
+        "婚約を予定している"
+    )
+    .replace(
+        /婚約しようと思/g,
+        "婚約を考えている"
+    )
+    .replace(
+        /復縁した(?:くない|くはない|くありません|くはありません|くなかった)/g,
+        "復縁を希望していない"
+    )
+    .replace(
+        /よりを戻した(?:い|かった|くない|くはない|くありません|くはありません|くなかった)/g,
+        "復縁を希望している"
+    )
+    .replace(
+        /よりを戻す(?:予定|つもり)/g,
+        "復縁を予定している"
+    )
+    .replace(
+        /よりを戻そうと思/g,
+        "復縁を考えている"
+    )
+    .replace(
+        /ヨリを戻した(?:い|かった|くない|くはない|くありません|くはありません|くなかった)/g,
+        "復縁を希望している"
+    )
+    .replace(
+        /ヨリを戻す(?:予定|つもり)/g,
+        "復縁を予定している"
+    )
+    .replace(
+        /ヨリを戻そうと思/g,
+        "復縁を考えている"
+    );
+
+// ===== プロポーズ・告白の否定や推測を確定扱いしない =====
+question = question
+    .replace(
+        /プロポーズされた(?:という)?(?:わけではない|わけではありません|わけじゃない|とは限らない|とは限りません)/g,
+        "プロポーズはされていない"
+    )
+    .replace(
+        /プロポーズされた(?:かもしれない|かもしれません|可能性がある|可能性があります|と思う|と思います|と思っている|と思っています)/g,
+        "プロポーズの可能性がある"
+    )
+    .replace(
+        /告白された(?:という)?(?:わけではない|わけではありません|わけじゃない|とは限らない|とは限りません)/g,
+        "告白はされていない"
+    )
+    .replace(
+        /告白された(?:かもしれない|かもしれません|可能性がある|可能性があります|と思う|と思います|と思っている|と思っています)/g,
+        "告白の可能性がある"
+    );
+
+
 const isReconciledAlready =
     question.includes("復縁しました") ||
     (question.includes("復縁した") &&
@@ -3691,15 +3826,63 @@ const isConfessionRejectedWithContact =
      question.includes("その後も連絡") ||
      question.includes("相手から連絡"));
 
-const isConfirmedCheating =
-    question.includes("浮気された") ||
-    question.includes("浮気されました") ||
-    question.includes("浮気されて") ||
+
+// ===== 浮気の否定・推測・未確認表現を区別する =====
+
+// ===== 浮気の証拠・発覚についての否定や推測を確定扱いしない =====
+question = question
+    .replace(
+        /(?:浮気していたことが(?:分かった|わかった)|浮気が発覚(?:した)?|浮気を認めた|浮気を認めました|浮気の証拠がある|浮気の証拠が見つかった|浮気の証拠を見つけた)(?:という)?(?:わけではない|わけではありません|わけじゃない|とは限らない|とは限りません)/g,
+        "浮気の証拠が確認できない"
+    )
+    .replace(
+        /(?:浮気していたことが(?:分かった|わかった)|浮気が発覚(?:した)?|浮気を認めた|浮気を認めました|浮気の証拠がある|浮気の証拠が見つかった|浮気の証拠を見つけた)(?:かもしれない|かもしれません|可能性がある|可能性があります|と思う|と思います|と思っている|と思っています)/g,
+        "浮気の可能性がある"
+    );
+
+
+const hasConfirmedCheatingEvidence =
     question.includes("浮気していたことが分かった") ||
     question.includes("浮気していたことがわかった") ||
     question.includes("浮気が発覚") ||
     question.includes("浮気を認めた") ||
-    question.includes("浮気を認めました");
+    question.includes("浮気を認めました") ||
+    question.includes("浮気の証拠がある") ||
+    question.includes("浮気の証拠が見つかった") ||
+    question.includes("浮気の証拠を見つけた");
+
+const hasUnconfirmedCheating =
+    question.includes("浮気されていない") ||
+    question.includes("浮気されていません") ||
+    question.includes("浮気されなかった") ||
+    question.includes("浮気していない") ||
+    question.includes("浮気していません") ||
+    question.includes("浮気ではない") ||
+    question.includes("浮気じゃない") ||
+    /浮気[^。！？\n]{0,30}(?:わけではない|わけではありません|わけじゃない|とは限らない|とは限りません)/.test(question) ||
+    /浮気[^。！？\n]{0,30}(?:かもしれない|かもしれません|可能性がある|可能性があります|疑っている|疑っています|と思う|と思います|と思っている|と思っています)/.test(question) ||
+    /浮気[^。！？\n]{0,30}証拠(?:が|は|も)?(?:ない|ありません|見つからない|確認できない)/.test(question) ||
+    /浮気[^。！？\n]{0,30}(?:分からない|わからない|不明)/.test(question);
+
+
+const isConfirmedCheating =
+    hasConfirmedCheatingEvidence ||
+    (
+        !hasUnconfirmedCheating &&
+        (
+            question.includes("恋人が浮気した") ||
+            question.includes("恋人が浮気しました") ||
+            question.includes("彼氏が浮気した") ||
+            question.includes("彼氏が浮気しました") ||
+            question.includes("彼女が浮気した") ||
+            question.includes("彼女が浮気しました") ||
+            question.includes("相手が浮気した") ||
+            question.includes("相手が浮気しました") ||
+            question.includes("浮気された") ||
+            question.includes("浮気されました") ||
+            question.includes("浮気されて")
+        )
+    );
 
 
 /* 「好きな人を○○に誘いたい」を既存シナリオに一括対応 */
@@ -3747,6 +3930,7 @@ if(/^([あ-んア-ンa-zA-Z0-9])\1+$/.test(question.trim())){
 }
 
 const loveKeywords = [
+"両思い",
 "好き",
 "恋",
 "告白",
@@ -4473,9 +4657,193 @@ for(let word of loveKeywords){
     }
 }
 
+// ===== 専用シナリオの入力確認を補強 =====
+const scenarioLoveKeywords = [
+    "よりを戻",
+    "ヨリを戻",
+    "やり直",
+    "毎日ライン",
+    "浮気",
+    "クリスマス",
+    "一緒に過ご",
+    "笑ってくれ",
+    "ライン交換",
+    "誘われ",
+    "目が合",
+    "プレゼント",
+    "誕生日",
+    "香水",
+    "コーヒー",
+    "そば",
+    "石けん",
+    "パン",
+    "宝石",
+    "ドローン",
+    "野菜",
+    "犬と触れ合",
+    "温室",
+    "料理",
+    "星を見",
+    "フルーツ狩り",
+    "ライバル",
+    "手をつな",
+    "手を繋",
+    "付き合",
+    "プロポーズ",
+    "婚約",
+    "同棲",
+    "一緒に住",
+    "一緒に暮",
+    "入籍",
+    "考えさせて",
+    "考えたい",
+    "保留",
+    "二人で遊",
+    "二人で出かけ",
+    "マッチングアプリ",
+    "アプリで知り合",
+    "婚活アプリ",
+    "出会い系アプリ",
+    "年齢差",
+    "歳年上",
+    "歳年下",
+    "職場の",
+    "会社の",
+    "ブロック",
+    "既読無視",
+    "別れ",
+    "距離を置",
+    "目を合わせ",
+    "緊張して",
+    "無理と言われ",
+    "できないと言われ",
+    "他の人と仲良く",
+    "異性と仲良く",
+    "冷た",
+    "嫌われ",
+    "誘ってみたい",
+    "行きませんか",
+    "また二人で会"
+];
+
+if(
+    scenarioLoveKeywords.some(word =>
+        question.includes(word)
+    )
+){
+    hasLoveKeyword = true;
+}
+
 if(!hasLoveKeyword){
     alert("⚠️ 恋愛に関する相談内容を入力してください。");
     return;
+}
+
+// ===== 確定した浮気を他の明るいシナリオより優先 =====
+if(isConfirmedCheating){
+    question = "浮気されました";
+}
+
+// ===== 良い出来事より後に書かれた深刻な悪化を優先 =====
+const majorPositiveMilestoneWords = [
+    "キスした",
+    "キスしました",
+    "キスされた",
+    "キスされました",
+    "告白された",
+    "告白されました",
+    "好きと言われた",
+    "好きと言われました",
+    "好きって言われた",
+    "好きって言われました",
+    "付き合うことになった",
+    "付き合うことになりました",
+    "恋人になった",
+    "恋人になりました",
+    "プロポーズされた",
+    "プロポーズされました",
+    "婚約した",
+    "婚約しました",
+    "結婚した",
+    "結婚しました",
+    "入籍した",
+    "入籍しました",
+    "復縁した",
+    "復縁しました",
+    "よりを戻した",
+    "よりを戻しました",
+    "ヨリを戻した",
+    "ヨリを戻しました"
+];
+
+const lastPositiveMilestonePosition =
+    Math.max(
+        ...majorPositiveMilestoneWords.map(word =>
+            question.lastIndexOf(word)
+        )
+    );
+
+const majorBadEvents = [
+    {
+        result: "ブロックされました",
+        words: [
+            "ブロックされた",
+            "ブロックされました",
+            "LINEをブロックされた",
+            "LINEをブロックされました",
+            "ラインをブロックされた",
+            "ラインをブロックされました"
+        ]
+    },
+    {
+        result: "別れたいと言われた",
+        words: [
+            "別れたいと言われた",
+            "別れたいと言われました",
+            "別れようと言われた",
+            "別れようと言われました",
+            "別れようって言われた",
+            "別れようって言われました",
+            "距離を置きたいと言われた",
+            "距離を置きたいと言われました",
+            "距離を置こうと言われた",
+            "距離を置こうと言われました"
+        ]
+    }
+];
+
+let latestBadEvent = null;
+
+for(const badEvent of majorBadEvents){
+
+    const badPosition =
+        Math.max(
+            ...badEvent.words.map(word =>
+                question.lastIndexOf(word)
+            )
+        );
+
+    if(
+        badPosition >= 0 &&
+        (
+            latestBadEvent === null ||
+            badPosition > latestBadEvent.position
+        )
+    ){
+        latestBadEvent = {
+            position: badPosition,
+            result: badEvent.result
+        };
+    }
+}
+
+if(
+    !isConfirmedCheating &&
+    lastPositiveMilestonePosition >= 0 &&
+    latestBadEvent !== null &&
+    latestBadEvent.position > lastPositiveMilestonePosition
+){
+    question = latestBadEvent.result;
 }
 
 /* ==============================
@@ -4510,7 +4878,13 @@ const excludedPastKeywords = [
     "電話",
     "通話",
     "復縁",
-    "結婚"
+    "結婚",
+    "キス",
+    "彼氏",
+    "彼女",
+    "元彼",
+    "元カノ",
+    "ハグ"
 ];
 
 const matchedPastKeywords =
@@ -4555,6 +4929,19 @@ isPastFirstDate
             )
         );
     }) || null;
+
+const isPastChristmasDate =
+    question.includes("クリスマス") &&
+    (
+        question.includes("デートした") ||
+        question.includes("デートしました") ||
+        question.includes("一緒に過ごした") ||
+        question.includes("一緒に過ごしました") ||
+        question.includes("食事に行った") ||
+        question.includes("食事に行きました")
+    ) &&
+    !question.includes("誘いたい") &&
+    !question.includes("行きたい");
 
 const lightTroubleKeywords = [
     "不安",
@@ -4788,7 +5175,7 @@ if(question.includes("デートに誘われた") ||
     "誘ってくれたことへの嬉しさを自然に伝え、当日は会話と一緒に過ごす時間を楽しみましょう。";
 
     cautionPoint.innerText =
-    "誘われただけで脈ありと決めつけず、デート中の態度やその後の連絡も合わせて判断しましょう.";
+    "誘われただけで脈ありと決めつけず、デート中の態度やその後の連絡も合わせて判断しましょう。";
 
      finalJudge.innerText =
     "相手から誘われたことは前向きなサインです。ただし、誘いだけで恋愛感情が確定するわけではないため、その後の反応も合わせて見ていきましょう。";
@@ -4834,7 +5221,60 @@ if(question.includes("告白を断られた") ||
 }
 
 
-if(pastDateKeyword){
+if(isPastChristmasDate){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💖 シグナルレベル：★★★★☆";
+
+    answer =
+    "今の運命シグナルは『特別な時間を共有し、二人の距離が深まった状態』です。好きな人とクリスマスデートを実際に過ごせたことは、通常のお出かけよりも特別感のある前向きな出来事です。";
+
+    currentStatus.innerText =
+    "二人はクリスマスという特別な日に、一緒に思い出を作れた状態です。相手もあなたと過ごす時間を大切に感じている可能性があります。";
+
+    recommendAction.innerText =
+    "デートのお礼と楽しかった気持ちを自然に伝え、印象に残った出来事を話題にして次の約束へつなげましょう。";
+
+    cautionPoint.innerText =
+    "クリスマスを一緒に過ごせたことだけで気持ちを決めつけず、その後の連絡や次の誘いへの反応も見ていきましょう。";
+
+    finalJudge.innerText =
+    "クリスマスデートを一緒に楽しめたことは、二人の関係にとって強いプラス材料です。良い余韻を大切にすれば、さらに関係が深まる可能性があります。";
+
+    lovePower.innerText = "85%";
+    loveBar.style.width = "85%";
+
+    successRate.innerText =
+    "💘 恋愛成就確率：78%";
+    successBar.style.width = "78%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：83 / 100";
+    signalBar.style.width = "83%";
+
+    luckyAction.innerText =
+    "🎄 クリスマスデートで楽しかった出来事を一つ伝えてみましょう。";
+
+    aiComment.innerText =
+    "特別な日に一緒に過ごせたことは、関係を深める良いきっかけです。次の自然な交流につなげていきましょう。";
+
+    partnerFeeling.innerText =
+    "相手もクリスマスを一緒に過ごした時間を、特別な思い出として感じている可能性があります。";
+
+    bestTiming.innerText =
+    "デート当日から数日以内に、お礼と楽しかった気持ちを伝えるのがおすすめです。";
+
+    chanceTiming.innerText =
+    "📅 クリスマスデート後の1〜2週間は、次の約束につなげやすい時期です。";
+
+    luckyColor.innerText =
+    "❤️ クリスマスレッド：温かい気持ちと素直な好意を後押ししてくれるでしょう。";
+}
+
+else if(pastDateKeyword){
 
     isPositive = false;
     isSuperPositive = false;
@@ -4892,9 +5332,17 @@ if(pastDateKeyword){
 else if(
     isTalkCase &&
     !isScenarioCase &&
+　　!isPositive &&
+    !isSuperPositive &&
     !question.includes("行きたい") &&
-    !question.includes("誘いたい")
+    !question.includes("誘いたい") &&
+    !(
+        question.includes("恋人") &&
+        question.includes("順調") &&
+        question.includes("結婚")
+    )
 ){
+
     currentStatus.innerText =
     "相手との会話ができたことで、関係は少しずつ前進している状態です。";
 
@@ -13826,7 +14274,9 @@ else if(question.includes("ハグした") ||
 }
 
 else if(question.includes("キスした") ||
-        question.includes("キスされた")){
+        question.includes("キスしました") ||
+        question.includes("キスされた") ||
+        question.includes("キスされました")){
 
     isPositive = false;
     isSuperPositive = false;
@@ -13863,8 +14313,11 @@ else if(question.includes("キスした") ||
 }
 
 else if(question.includes("告白された") ||
+        question.includes("告白されました") ||
         question.includes("好きと言われた") ||
-        question.includes("好きって言われた")){
+        question.includes("好きと言われました") ||
+        question.includes("好きって言われた") ||
+        question.includes("好きって言われました")){
 
     isPositive = false;
     isSuperPositive = false;
@@ -13979,6 +14432,67 @@ else if(question.includes("相手から連絡") ||
     "連絡が来たからといって一気に距離を詰めすぎず、相手のペースも大切にしましょう。";
 }
 
+
+else if(
+    question.includes("恋人") &&
+    question.includes("順調") &&
+    question.includes("結婚")
+){
+
+    isPositive = false;
+    isSuperPositive = false;
+    isScenarioCase = true;
+
+    level = "💖 シグナルレベル：★★★★★";
+
+    answer =
+    "今の運命シグナルは『二人で将来を見据えている安定した関係』です。恋人として順調に関係を育てながら、結婚について話せていることは、信頼と将来への意思がある強いサインです。";
+
+    currentStatus.innerText =
+    "二人は現在の関係だけでなく、結婚後の未来も一緒に考え始めている状態です。";
+
+    recommendAction.innerText =
+    "結婚後の生活、仕事、お金、住まい、家族との関係などについて、焦らず具体的に話し合っていきましょう。";
+
+    cautionPoint.innerText =
+    "気持ちだけで話を進めず、お互いの価値観や生活設計に違いがないかも丁寧に確認しましょう。";
+
+    finalJudge.innerText =
+    "二人の関係は非常に良い流れです。将来について現実的な話し合いを重ねることで、結婚へさらに近づいていくでしょう。";
+
+    lovePower.innerText = "94%";
+    loveBar.style.width = "94%";
+
+    successRate.innerText =
+    "💘 恋愛成就確率：91%";
+    successBar.style.width = "91%";
+
+    signalIndex.innerText =
+    "運命シグナル指数：93 / 100";
+    signalBar.style.width = "93%";
+
+        luckyAction.innerText =
+    "🍀 結婚後に大切にしたい暮らし方について、一つ話題にしてみましょう。";
+
+    aiComment.innerText =
+    "二人が将来について話せていることは、信頼関係が育っている強い証拠です。気持ちと現実の両方を大切に進めていきましょう。";
+
+    partnerFeeling.innerText =
+    "相手もあなたとの将来を前向きに考え、長く一緒に歩んでいきたいと思っている可能性が高いでしょう。";
+
+    bestTiming.innerText =
+    "二人で落ち着いて過ごせる日に、結婚後の生活について少しずつ具体的に話すのがおすすめです。";
+
+    chanceTiming.innerText =
+    "📅 今後1〜3か月ほどかけて将来設計を話し合うことで、結婚に向けた次の段階が見えてきそうです。";
+
+    luckyColor.innerText =
+    "🤍 ホワイト：誠実さと新しい人生への前向きな気持ちを後押ししてくれるでしょう。";
+
+
+}
+
+
 else if(question.includes("プロポーズされた") ||
         question.includes("プロポーズされました") ||
         question.includes("結婚しようと言われた") ||
@@ -14015,6 +14529,24 @@ else if(question.includes("プロポーズされた") ||
 
     cautionPoint.innerText =
     "気持ちが高まっている時ほど、現実的な価値観や生活面の相性も確認することが大切です。";
+
+　　    luckyAction.innerText =
+    "💍 結婚後に大切にしたい暮らし方について、二人で一つ話してみましょう。";
+
+    aiComment.innerText =
+    "プロポーズは、相手があなたとの将来を真剣に考えている明確な意思表示です。嬉しい気持ちと現実的な準備の両方を大切にしましょう。";
+
+    partnerFeeling.innerText =
+    "相手はあなたを人生のパートナーとして考え、一緒に将来を歩みたいという強い意思を持っているでしょう。";
+
+    bestTiming.innerText =
+    "気持ちが落ち着いた段階で、結婚時期や今後の生活について具体的に話し合うのがおすすめです。";
+
+    chanceTiming.innerText =
+    "📅 今後1〜3か月は、結婚に向けた予定や生活設計を具体化しやすい時期です。";
+
+    luckyColor.innerText =
+    "🤍 ホワイト：誠実な約束と新しい人生の始まりを象徴する色です。";
 }
 
 
@@ -15575,6 +16107,12 @@ if(isPositive){
     lovePower.innerText = "78%";
 　　loveBar.style.width = "78%";
 
+successRate.innerText =
+"💘 恋愛成就確率：75%";
+
+successBar.style.width = "75%";
+
+
 　　signalIndex.innerText =
 　　"運命シグナル指数：75 / 100";
 
@@ -15742,6 +16280,12 @@ if(isSuperPositive){
 
     lovePower.innerText = "100%";
     loveBar.style.width = "100%";
+
+    successRate.innerText =
+"💘 恋愛成就確率：95%";
+
+successBar.style.width = "95%";
+
 
     signalIndex.innerText =
     "運命シグナル指数：100 / 100";
@@ -16093,6 +16637,46 @@ if(relationshipAdvice[relationship]){
     "\n\n💞 関係性からのアドバイス：" +
     relationshipAdvice[relationship];
 }
+
+
+// ===== 星5の個別シナリオ専用の共通補完 =====
+if(isScenarioCase && level.includes("★★★★★")){
+
+    if(!luckyAction.innerText.trim()){
+        luckyAction.innerText =
+        "✨ 今の関係への感謝や嬉しい気持ちを、素直な言葉で一つ伝えてみましょう。";
+    }
+
+    if(!aiComment.innerText.trim()){
+        aiComment.innerText =
+        "二人の関係は大きな節目を迎えています。今の良い流れを大切にしながら、信頼と思いやりを育てていきましょう。";
+    }
+
+    if(!partnerFeeling.innerText.trim()){
+        partnerFeeling.innerText =
+        "相手もあなたとの関係を大切に考え、これからも良い関係を続けたいと思っている可能性が高いでしょう。";
+    }
+
+    if(!bestTiming.innerText.trim()){
+        bestTiming.innerText =
+        "二人で落ち着いて話せる時に、嬉しい気持ちや今後について自然に伝えるのがおすすめです。";
+    }
+
+        if(
+        !chanceTiming.innerText.trim() ||
+        chanceMessages.includes(chanceTiming.innerText)
+    ){
+
+        chanceTiming.innerText =
+        "📅 今は二人の関係にとって大切な節目です。焦らず、次の段階を一緒に考えていきましょう。";
+    }
+
+    if(!luckyColor.innerText.trim()){
+        luckyColor.innerText =
+        "💛 ゴールド：喜びと前向きな関係の進展を後押ししてくれるでしょう。";
+    }
+}
+
 
 // ===== 個別シナリオで空欄になった結果を共通補完 =====
 if(!luckyAction.innerText.trim()){
