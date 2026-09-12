@@ -1888,6 +1888,19 @@ question = question
 // ===== 脈あり診断：否定・推測前の文章を履歴用に保持 =====
 const interestOriginalQuestion = question;
 
+// ===== 脈あり診断：浮気の確定・疑い・否定を区別 =====
+const interestCheatingNegated =
+    /(?:浮気していない|浮気していません|浮気してなかった|浮気していなかった|浮気されていない|浮気されていません|浮気されなかった|浮気ではない|浮気ではありません|浮気じゃない)/.test(interestOriginalQuestion);
+
+const interestCheatingSuspected =
+    !interestCheatingNegated &&
+    /(?:浮気かも|浮気[^。！？\n]{0,30}(?:かもしれない|かもしれません|可能性がある|可能性があります|疑っている|疑っています|疑いがある|疑いがあります|証拠がない|証拠がありません|証拠はない|証拠はありません|分からない|わからない|不明))/.test(interestOriginalQuestion);
+
+const interestCheatingConfirmed =
+    !interestCheatingNegated &&
+    !interestCheatingSuspected &&
+    /(?:浮気(?:を)?(?:した|しました|していた|していました|している|してる)|浮気(?:を)?(?:された|されました)|浮気が発覚(?:した|しました)?|浮気を認めた|浮気を認めました|浮気の証拠が(?:ある|あります|見つかった|見つかりました))/.test(interestOriginalQuestion);
+
 // ===== 告白・好意表明の否定や推測を確定扱いしない =====
 question = question.replace(
     /(告白された|好きと言われた|好きって言われた|付き合ってと言われた|付き合ってほしいと言われた|付き合いたいと言われた|恋人になってほしいと言われた)(?:という)?(?:わけではない|わけではありません|わけじゃない|とは限らない|とは限りません|かもしれない|かもしれません|可能性がある|可能性があります|と思う|と思います|と思っている|と思っています)/g,
@@ -2877,6 +2890,19 @@ if(hadPastPositive && hasRecentNegative){
         score -= 5;
     }
 
+    /* ==============================
+       浮気に関する上限補正
+       恋人関係の加点よりも後で適用する
+    ============================== */
+
+    if(interestCheatingConfirmed){
+        score = Math.min(score, 35);
+        negativeCount += 2;
+    }else if(interestCheatingSuspected){
+        score = Math.min(score, 45);
+        negativeCount++;
+    }
+
     
 /* ==============================
    告白を断られた後に状況が好転している場合の上限補正
@@ -2975,7 +3001,31 @@ if(
 
 
     
-if(uniqueStrongNegativeWords.length >= 2){
+if(interestCheatingConfirmed){
+
+    level =
+    "💙 脈あり度：低め";
+
+    comment =
+    "浮気が事実として確認できているため、好意の強さよりも、二人の信頼関係が大きく損なわれていることを重く見る必要があります。";
+
+    action =
+    "脈ありかどうかだけで判断せず、自分が安心して関係を続けられるかを優先し、今後について冷静に話し合いましょう。";
+
+}
+else if(interestCheatingSuspected){
+
+    level =
+    "💛 脈あり度：まだ判断が難しい";
+
+    comment =
+    "浮気はまだ確認できていないため、疑いだけで相手の好意を断定することはできません。ただし、不安を感じる状況があることには注意が必要です。";
+
+    action =
+    "推測だけで決めつけず、相手の説明や行動を落ち着いて確認し、自分が感じている不安について話し合いましょう。";
+
+}
+else if(uniqueStrongNegativeWords.length >= 2){
 
     level =
     "🌙 脈あり度：かなり低い";
